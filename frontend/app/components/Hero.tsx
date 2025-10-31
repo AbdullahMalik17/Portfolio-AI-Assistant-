@@ -18,13 +18,13 @@ const Hero = () => {
           {/* Name */}
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold mb-6 animate-slide-up">
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              AI Assistant
+              Abdullah AI Assistant
             </span>
           </h1>
 
           {/* Title */}
           <h2 className="text-2xl sm:text-3xl md:text-4xl text-gray-800 dark:text-gray-200 mb-8 font-semibold animate-slide-up-delay">
-            Full-Stack Developer & AI Specialist
+            Full-Stack & Agentic AI Developer
           </h2>
 
           {/* Description */}
@@ -52,7 +52,7 @@ const Hero = () => {
           {/* Social Links */}
           <div className="mt-12 flex justify-center space-x-6 animate-fade-in-delay">
             <a
-              href="https://github.com"
+              href="https://github.comhttps://github.com/AbdullahMalik17/AbdullahMalik17"
               target="_blank"
               rel="noopener noreferrer"
               className="w-12 h-12 flex items-center justify-center bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300"
@@ -70,7 +70,7 @@ const Hero = () => {
               </svg>
             </a>
             <a
-              href="https://linkedin.com"
+              href="www.linkedin.com/in/muhammad-abdullah-athar"
               target="_blank"
               rel="noopener noreferrer"
               className="w-12 h-12 flex items-center justify-center bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300"
@@ -84,7 +84,7 @@ const Hero = () => {
               </svg>
             </a>
             <a
-              href="mailto:contact@example.com"
+              href="mailto:muhammadabdullah51700@gmail.com"
               className="w-12 h-12 flex items-center justify-center bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300"
             >
               <svg

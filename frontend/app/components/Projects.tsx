@@ -8,25 +8,18 @@ const Projects = () => {
       link: '#',
     },
     {
-      title: 'E-Commerce Platform',
-      description: 'Full-stack e-commerce solution with AI-powered recommendations and automated customer support.',
-      tech: ['Next.js', 'FastAPI', 'PostgreSQL'],
-      image: '🛒',
-      link: '#',
-    },
-    {
-      title: 'Smart Task Manager',
-      description: 'AI-powered task management system with intelligent scheduling and priority optimization.',
-      tech: ['React', 'Python', 'OpenAI'],
-      image: '📋',
-      link: '#',
+      title: 'AI Code Assistant',
+      description: 'Multi AI Model code assistant that helps developers write, debug, and optimize code snippets.',
+      tech: ['OpenAI Agent SDk', 'MEM0', 'Python', 'Chainlit' , 'Langfuse'],
+      image: '💻',
+      link: 'https://github.com/AbdullahMalik17/Agentic_AI/tree/main/_Projects/Code_Assistant_agent'
     },
     {
       title: 'Portfolio Website',
       description: 'Modern, responsive portfolio website with smooth animations and dark mode support.',
       tech: ['Next.js', 'TypeScript', 'Tailwind'],
       image: '💼',
-      link: '#',
+      link: 'https://github.com/AbdullahMalik17/Portfolio-AI-Assistant',
     },
   ];
 

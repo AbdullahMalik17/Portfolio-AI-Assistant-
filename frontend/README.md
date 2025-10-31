@@ -10,6 +10,7 @@ A modern, responsive portfolio website built with Next.js, TypeScript, and Tailw
 - 🎨 Beautiful gradient themes
 - 🔍 Smooth scroll navigation
 - 💼 Professional sections: Hero, About, Skills, Projects, Contact
+- 💬 Mini floating chatbot widget (Gemini-backed)
 
 ## Tech Stack
 
@@ -40,6 +41,22 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) to view the portfolio.
 
+Chatbot can run in two ways:
+
+1) Frontend-only (TypeScript API route using Gemini):
+
+```bash
+# frontend/.env.local
+GEMINI_API_KEY=your_key_here
+```
+
+2) Via separate Python backend (existing): If your backend runs on a different URL than `http://localhost:8000`, set:
+
+```bash
+# frontend/.env.local
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+```
+
 ### Build
 
 ```bash
@@ -57,6 +74,7 @@ npm start
 ```
 app/
 ├── components/         # React components
+│   ├── ChatbotWidget.tsx # Floating chatbot
 │   ├── Navbar.tsx     # Navigation bar
 │   ├── Hero.tsx       # Hero section
 │   ├── About.tsx      # About section
@@ -65,6 +83,7 @@ app/
 │   └── Contact.tsx    # Contact form
 ├── page.tsx           # Main page
 ├── layout.tsx         # Root layout
+├── api/chat/route.ts  # Next.js API route for Gemini chat
 └── globals.css        # Global styles
 
 ```

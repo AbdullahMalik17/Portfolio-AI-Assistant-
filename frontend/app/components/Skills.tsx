@@ -2,22 +2,22 @@ const Skills = () => {
   const skillCategories = [
     {
       title: 'Frontend',
-      skills: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'HTML/CSS'],
+      skills: ['Next.js', 'React', 'TypeScript','HTML/CSS','Chainlit for Chatbots'],
       color: 'from-blue-500 to-blue-600',
     },
     {
       title: 'Backend',
-      skills: ['Python', 'FastAPI', 'OpenAI SDK', 'REST APIs', 'PostgreSQL'],
+      skills: ['Python', 'OpenAI SDK', 'REST APIs', 'PostgreSQL'],
       color: 'from-green-500 to-green-600',
     },
     {
       title: 'AI/ML',
-      skills: ['OpenAI Agents', 'LangChain', 'Vector DBs', 'LLM Integration'],
+      skills: ['OpenAI Agent','Vector DBs', 'LLM Integration', 'N8N for Automation' , 'Openai Agent Kit'],
       color: 'from-purple-500 to-purple-600',
     },
     {
       title: 'Tools',
-      skills: ['Git', 'Docker', 'AWS', 'Vercel', 'JIRA'],
+      skills: ['Git', 'Mem0', 'AWS', 'Vercel'],
       color: 'from-orange-500 to-orange-600',
     },
   ];

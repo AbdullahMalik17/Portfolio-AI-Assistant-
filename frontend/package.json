@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@types/react-scroll": "^1.8.10",
     "next": "16.0.0",
     "react": "19.2.0",

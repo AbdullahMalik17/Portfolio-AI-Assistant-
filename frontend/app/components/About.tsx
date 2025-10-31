@@ -28,9 +28,11 @@ const About = () => {
                 intelligence.
               </p>
               <p>
-                My journey in tech has led me to specialize in Next.js for frontend
-                development and Python for backend services, particularly focusing on
-                OpenAI integration and AI agent frameworks.
+                My Journey Basically start from 10th class , when I was in 14 years old . I started 
+                with Html , CSS , JavaScipt . Then , I practised for three month and make some <a href="https://github.com/AbdullahMalik17/Projects-of-html"></a>
+                After , I learnt TypeScript . Later , I move on Agentic AI Development from Panaversity.  
+                There , I learnt how to make AI Agents using OpenAI , Python and N8n .
+
               </p>
               <p>
                 I believe in creating seamless, intelligent experiences that make
