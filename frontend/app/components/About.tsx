@@ -23,7 +23,7 @@ const About = () => {
             </h3>
             <div className="space-y-4 text-lg text-gray-600 dark:text-gray-400">
               <p>
-                I'm a passionate full-stack developer and AI specialist with expertise
+                I&apos;m a passionate full-stack developer and AI specialist with expertise
                 in creating modern web applications powered by cutting-edge artificial
                 intelligence.
               </p>
@@ -75,7 +75,7 @@ const About = () => {
                     <div className="w-3 h-3 rounded-full bg-green-500"></div>
                   </div>
                   <code className="text-sm text-gray-800 dark:text-white">
-                    {'const ai = new Assistant()'}
+                    {'const ai = new Assistant&apos;()'}
                   </code>
                 </div>
 

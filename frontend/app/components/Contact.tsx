@@ -67,7 +67,7 @@ const Contact = () => {
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto"></div>
           <p className="mt-6 text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Have a project in mind? Let's collaborate and create something amazing together
+            Have a project in mind? Let&apos;s collaborate and create something amazing together
           </p>
         </div>
 
@@ -205,7 +205,7 @@ const Contact = () => {
             <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
               <h3 className="text-2xl font-bold mb-4">Ready to build something amazing?</h3>
               <p className="mb-6">
-                Let's discuss how AI can enhance your project and bring your vision to life.
+                Let&apos;s discuss how AI can enhance your project and bring your vision to life.
               </p>
               <div className="flex items-center gap-2">
                 <span className="text-sm">✨ AI-Powered Solutions</span>

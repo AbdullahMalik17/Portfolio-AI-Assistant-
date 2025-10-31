@@ -1,0 +1,2 @@
+Requirement already satisfied: pydantic in f:\portfolio-ai-assistant-\backend\venv\lib\site-packages (1.10.13)
+Requirement already satisfied: typing-extensions>=4.2.0 in f:\portfolio-ai-assistant-\backend\venv\lib\site-packages (from pydantic) (4.15.0)

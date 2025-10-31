@@ -11,7 +11,7 @@ const Hero = () => {
           {/* Animated greeting */}
           <div className="mb-6">
             <span className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 animate-fade-in">
-              👋 Hello, I'm
+              👋 Hello, I&apos;m
             </span>
           </div>
 

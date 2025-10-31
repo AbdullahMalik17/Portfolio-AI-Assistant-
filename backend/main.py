@@ -9,16 +9,16 @@ from fastapi.responses import JSONResponse
 import os
 from dotenv import load_dotenv
 
-# Load environment variables
+# Load environment variables FIRST before importing routes
 load_dotenv()
 
-# Import routes
+# Import routes (after load_dotenv so env vars are available)
 from routes import contact, assistant
 
 app = FastAPI(
     title="Portfolio AI Assistant API",
     description="Backend API for Portfolio with AI Assistant Integration",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 # CORS configuration
@@ -41,20 +41,17 @@ async def root():
     return {
         "message": "Portfolio AI Assistant API",
         "version": "1.0.0",
-        "status": "running"
+        "status": "running",
     }
 
 
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
-    return {
-        "status": "healthy",
-        "service": "Portfolio AI Assistant API"
-    }
+    return {"status": "healthy", "service": "Portfolio AI Assistant API"}
 
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
 
+    uvicorn.run(app, host="0.0.0.0", port=8000)
