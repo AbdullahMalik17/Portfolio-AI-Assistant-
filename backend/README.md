@@ -1,134 +1,169 @@
-# Portfolio AI Assistant - Python Backend
+# Portfolio AI Assistant - Backend
 
-Backend API server built with FastAPI and Google Gemini AI SDK integration.
+Professional backend implementation using OpenAI Agent SDK with Context7 integration support.
 
-## Features
+## 🏗️ Architecture
 
-- 🚀 **FastAPI** - Modern, fast Python web framework
-- 🤖 **Gemini AI Integration** - Google Gemini AI for intelligent responses
-- 📧 **Contact Form** - Handle contact form submissions
-- 💬 **AI Chat** - Conversational AI assistant endpoint
-- 🔒 **CORS Enabled** - Configured for frontend integration
-
-## Setup
-
-### 1. Create Virtual Environment
-
-```bash
-python -m venv venv
-
-# On Windows
-venv\Scripts\activate
-
-# On Linux/Mac
-source venv/bin/activate
+```
+backend/
+├── main.py                 # FastAPI application entry point
+├── config.py              # Configuration management
+├── agents/                # AI Agent implementations
+│   ├── __init__.py
+│   └── portfolio_agent.py
+├── routes/                # API routes
+│   ├── __init__.py
+│   └── assistant.py
+├── services/              # Business logic services
+│   ├── __init__.py
+│   └── context_service.py # Context7 integration
+├── utils/                 # Utility functions
+│   ├── __init__.py
+│   └── logging_config.py
+└── pyproject.toml         # Dependencies
 ```
 
-### 2. Install Dependencies
+## 🚀 Features
+
+- **OpenAI Agent SDK**: Professional agent implementation with proper session management
+- **Context7 Integration**: Support for dynamic documentation retrieval (optional)
+- **FastAPI**: Modern REST API with automatic documentation
+- **Session Management**: SQLite-based conversation history
+- **Error Handling**: Comprehensive error handling and logging
+- **Chainlit Support**: Optional chat interface integration
+
+## 📦 Installation
 
 ```bash
-pip install -r requirements.txt
+# Install dependencies using uv (recommended)
+cd backend
+uv sync
+
+# Or using pip
+pip install -e .
 ```
 
-### 3. Configure Environment Variables
+## ⚙️ Configuration
 
-Copy `env.example` to `.env` and add your Gemini API key:
+Create a `.env` file in the `backend` directory:
 
-```bash
-copy env.example .env
-```
-
-Edit `.env`:
 ```env
-GEMINI_API_KEY=your_actual_gemini_api_key_here
+# Required
+GEMINI_API_KEY=your_gemini_api_key_here
+
+# Optional
+OPENAI_API_KEY=your_openai_api_key_here
+DEBUG=false
+HOST=0.0.0.0
+PORT=8000
+CONTEXT7_ENABLED=false
+SESSION_DB_PATH=conversations.db
 ```
 
-### 4. Run the Server
+## 🏃 Running the Server
 
+### Using Python directly:
 ```bash
 python main.py
 ```
 
-Or with uvicorn directly:
+### Using Uvicorn:
 ```bash
-uvicorn main:app --reload
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-Server will run at: http://localhost:8000
+### Using Chainlit (optional):
+```bash
+chainlit run main.py
+```
 
-## API Endpoints
+## 📡 API Endpoints
 
 ### Health Check
-```
-GET /health
-```
-
-### Root
-```
-GET /
-```
-
-### Contact Form
-```
-POST /api/contact
-Body: {
-  "name": "John Doe",
-  "email": "john@example.com",
-  "message": "Hello!"
-}
-```
-
-### AI Assistant Info
-```
-GET /api/assistant/info
-```
-
-### AI Chat
-```
-POST /api/assistant/chat
-Body: {
-  "message": "Hello, AI!"
-}
-```
-
-### Project Suggestions
-```
-POST /api/assistant/suggest-project
-Body: "I want to build an e-commerce site"
-```
-
-## Getting Your Gemini API Key
-
-1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Sign in with your Google account
-3. Click "Create API Key"
-4. Copy the key and add it to your `.env` file
-
-## Development
-
-### Project Structure
-```
-backend/
-├── main.py              # FastAPI server
-├── routes/
-│   ├── contact.py       # Contact form handler
-│   └── assistant.py     # AI assistant routes
-├── agents/
-│   └── gemini_agent.py  # Gemini AI integration
-├── requirements.txt     # Python dependencies
-└── env.example          # Environment variables template
-```
-
-## Testing
-
-Run with pytest:
 ```bash
-pytest
+GET /health
+GET /api/assistant/health
 ```
 
-## API Documentation
+### Chat Endpoint
+```bash
+POST /api/assistant/chat
+Content-Type: application/json
 
-Once the server is running, visit:
+{
+  "message": "Tell me about your skills",
+  "session_id": "optional_session_id"
+}
+```
+
+### Synchronous Chat (for testing)
+```bash
+POST /api/assistant/chat/sync
+```
+
+### API Documentation
 - Swagger UI: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/redoc
+
+## 🤖 Agent Features
+
+### Portfolio Agent
+- Provides information about portfolio owner
+- Discusses skills, projects, and experience
+- Maintains conversation context using sessions
+- Professional, friendly responses
+
+### Session Management
+- Automatic conversation history management
+- SQLite-based persistent storage
+- Session isolation for multiple users
+- Configurable database path
+
+## 🔧 Development
+
+### Code Structure
+- **Modular Design**: Separate concerns (agents, routes, services)
+- **Type Safety**: Full type hints throughout
+- **Error Handling**: Comprehensive exception handling
+- **Logging**: Structured logging for debugging
+
+### Adding New Features
+1. **New Agents**: Add to `agents/` directory
+2. **New Routes**: Add to `routes/` directory
+3. **New Services**: Add to `services/` directory
+
+## 📚 Dependencies
+
+- `fastapi`: Web framework
+- `uvicorn`: ASGI server
+- `openai-agents`: OpenAI Agent SDK
+- `chainlit`: Optional chat interface
+- `pydantic`: Data validation
+- `python-dotenv`: Environment variable management
+
+## 🔐 Security Notes
+
+- Never commit `.env` files
+- Keep API keys secure
+- Use environment variables for sensitive data
+- Enable CORS only for trusted origins in production
+
+## 🐛 Troubleshooting
+
+### Agent Initialization Fails
+- Check that `GEMINI_API_KEY` is set correctly
+- Verify API key is valid
+- Check network connectivity
+
+### Session Errors
+- Ensure write permissions for database file
+- Check `SESSION_DB_PATH` is valid
+
+### Import Errors
+- Run `pip install -e .` to install in development mode
+- Check Python version (requires >= 3.11)
+
+## 📝 License
+
+MIT License
 

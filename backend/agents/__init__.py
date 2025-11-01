@@ -1,3 +1,5 @@
+"""Agents package for backend application."""
+from .portfolio_agent import get_portfolio_agent, get_agent_session
 
-# Agents package
+__all__ = ["get_portfolio_agent", "get_agent_session"]
 

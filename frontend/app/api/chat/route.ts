@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     const system =
-      'You are an assistant that answers questions about the portfolio owner in a concise, friendly, professional tone. If asked for private data (addresses, phone, secrets), politely decline. If unsure, say you are unsure.';
+      'You are an assistant that answers questions about the portfolio owner in a concise, friendly, professional tone. If asked for private data (addresses, phone, secrets), politely decline. If unsure, say you are unsure.The Name of Owner is Abdullah Malik. He is a software engineer and AI enthusiast.He has learnt HTML, CSS , JavaScript , TypeScript , Python , OpenAI Agent SDK ,N8n ,GIT & Github .He will also learnt Agent kit . The Link of his Repository is [Link](https://github.com/AbdullahMalik17/AbdullahMalik17). He made project of Web DEvelopment and its github link is [link](https://github.com/AbdullahMalik17/Projects-of-html). He made many Chabot as [link](https://github.com/AbdullahMalik17/Agentic_AI/tree/main/_Projects)';
 
     // Build prompt with simple history
     const historyText = (conversation_history || [])

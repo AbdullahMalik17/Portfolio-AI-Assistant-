@@ -1,134 +1,190 @@
 """
-AI Assistant Routes
-Handles AI assistant interactions using Gemini/OpenAI
+FastAPI routes for the AI assistant endpoints.
+Handles chat requests and conversation management.
 """
-
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from typing import Optional, List, Dict
 import logging
-import os
+from typing import Optional
+from fastapi import APIRouter, HTTPException, status
+from pydantic import BaseModel, Field
+from agents import Runner
 
-# Import AI provider
-from agents.gemini_agent import GeminiAgent
+from agents import get_portfolio_agent, get_agent_session
+from config import settings
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-router = APIRouter()
+router = APIRouter(prefix="/api/assistant", tags=["assistant"])
 
-# Initialize AI Agent
-try:
-    gemini_agent = GeminiAgent()
-    AI_AVAILABLE = True
-except Exception as e:
-    logger.warning(f"⚠️ AI Agent not initialized: {str(e)}")
-    AI_AVAILABLE = False
+# Compatibility router for frontend
+compat_router = APIRouter(prefix="/api", tags=["compat"])
 
 
-class ChatMessage(BaseModel):
-    content: str
-    role: str = "user"  # "user" or "assistant"
-
-
+# Request/Response Models
 class ChatRequest(BaseModel):
-    message: str
-    conversation_history: Optional[List[ChatMessage]] = None
+    """Request model for chat endpoint."""
+    message: str = Field(..., description="User's message", min_length=1, max_length=2000)
+    session_id: Optional[str] = Field(None, description="Session ID for conversation continuity")
+    conversation_history: Optional[list[dict]] = Field(None, description="Previous conversation messages")
 
 
 class ChatResponse(BaseModel):
-    response: str
-    success: bool
-    model: Optional[str] = None
+    """Response model for chat endpoint."""
+    success: bool = Field(..., description="Whether the request was successful")
+    response: str = Field(..., description="Assistant's response")
+    session_id: Optional[str] = Field(None, description="Session ID for the conversation")
+    model: str = Field(..., description="Model used for generation")
 
 
-class AssistantInfo(BaseModel):
-    available: bool
+class HealthResponse(BaseModel):
+    """Health check response model."""
+    status: str
+    service: str
+    version: str
     model: str
-    description: str
 
 
-@router.get("/assistant/info", response_model=AssistantInfo)
-async def get_assistant_info():
+@router.get("/health", response_model=HealthResponse)
+async def health_check():
     """
-    Get AI assistant information
+    Health check endpoint to verify service status.
+    
+    Returns:
+        Health status information
     """
-    return AssistantInfo(
-        available=AI_AVAILABLE,
-        model="Gemini Pro" if AI_AVAILABLE else "Not configured",
-        description="AI Assistant powered by Google Gemini"
+    return HealthResponse(
+        status="healthy",
+        service=settings.app_name,
+        version=settings.app_version,
+        model=settings.default_model,
     )
 
 
-@router.post("/assistant/chat", response_model=ChatResponse)
-async def chat_with_assistant(request: ChatRequest):
+@router.post("/chat", response_model=ChatResponse)
+async def chat(request: ChatRequest):
     """
-    Chat with AI assistant
+    Chat endpoint for interacting with the portfolio assistant.
     
-    - **message**: User's message
-    - **conversation_history**: Previous conversation messages (optional)
-    
-    Returns AI assistant response
+    Args:
+        request: Chat request with message and optional session info
+        
+    Returns:
+        Chat response with assistant's reply
+        
+    Raises:
+        HTTPException: If request is invalid or processing fails
     """
-    if not AI_AVAILABLE:
-        raise HTTPException(
-            status_code=503,
-            detail="AI Assistant is not available. Please configure GEMINI_API_KEY in environment variables."
-        )
-    
     try:
-        logger.info(f"🤖 AI Chat request: {request.message[:50]}...")
+        # Validate message
+        if not request.message or not request.message.strip():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Message cannot be empty"
+            )
         
-        # Get response from Gemini
-        response = await gemini_agent.get_response(
-            user_message=request.message,
-            conversation_history=request.conversation_history
-        )
+        logger.info(f"Received chat request: {request.message[:50]}...")
         
-        logger.info(f"✅ AI Response generated successfully")
+        # Get agent instance
+        agent = get_portfolio_agent()
+        
+        # Handle session
+        session = None
+        session_id = request.session_id or "default_session"
+        
+        if session_id:
+            session = get_agent_session(session_id)
+            logger.debug(f"Using session: {session_id}")
+        
+        # Run the agent
+        try:
+            result = await Runner.run(
+                starting_agent=agent,
+                input=request.message.strip(),
+                session=session,
+            )
+            
+            response_text = result.final_output
+            logger.info(f"Agent response generated successfully")
+            
+        except Exception as e:
+            logger.error(f"Error running agent: {e}", exc_info=True)
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Error processing request: {str(e)}"
+            )
         
         return ChatResponse(
-            response=response,
             success=True,
-            model="gemini-pro"
+            response=response_text,
+            session_id=session_id,
+            model=settings.default_model,
         )
-    
+        
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"❌ Error in AI chat: {str(e)}")
+        logger.error(f"Unexpected error in chat endpoint: {e}", exc_info=True)
         raise HTTPException(
-            status_code=500,
-            detail=f"An error occurred: {str(e)}"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An unexpected error occurred"
         )
 
 
-@router.post("/assistant/suggest-project")
-async def suggest_project_type(description: str):
+@router.post("/chat/sync", response_model=ChatResponse)
+async def chat_sync(request: ChatRequest):
     """
-    Get project suggestions based on description
-    """
-    if not AI_AVAILABLE:
-        raise HTTPException(status_code=503, detail="AI not available")
+    Synchronous chat endpoint (for testing/compatibility).
     
+    Args:
+        request: Chat request with message and optional session info
+        
+    Returns:
+        Chat response with assistant's reply
+    """
     try:
-        prompt = f"""
-        Based on this project description: "{description}"
+        if not request.message or not request.message.strip():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Message cannot be empty"
+            )
         
-        Suggest:
-        1. Technology stack recommendations
-        2. Features to consider
-        3. Best practices
+        logger.info(f"Received sync chat request: {request.message[:50]}...")
         
-        Keep it concise and professional.
-        """
+        agent = get_portfolio_agent()
         
-        response = await gemini_agent.get_response(user_message=prompt)
+        session = None
+        session_id = request.session_id or "default_session"
         
-        return {
-            "success": True,
-            "suggestions": response
-        }
-    
+        if session_id:
+            session = get_agent_session(session_id)
+        
+        # Use synchronous runner
+        result = Runner.run_sync(
+            starting_agent=agent,
+            input=request.message.strip(),
+            session=session,
+        )
+        
+        return ChatResponse(
+            success=True,
+            response=result.final_output,
+            session_id=session_id,
+            model=settings.default_model,
+        )
+        
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error in sync chat: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error processing request: {str(e)}"
+        )
+
+
+# Compatibility endpoint for frontend (/api/chat)
+@compat_router.post("/chat", response_model=ChatResponse)
+async def chat_compat(request: ChatRequest):
+    """
+    Compatibility endpoint for frontend that expects /api/chat.
+    This is a wrapper around the main chat endpoint.
+    """
+    return await chat(request)
 
