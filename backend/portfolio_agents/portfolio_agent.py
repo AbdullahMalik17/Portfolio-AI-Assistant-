@@ -4,9 +4,15 @@ This agent handles queries about the portfolio owner's information,
 skills, projects, and experience.
 """
 import logging
+import sys
 from typing import Optional
-from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel, RunContextWrapper
+from pathlib import Path
+
+# Import from OpenAI Agent SDK
+# Now safe to import since we renamed our local module to portfolio_agents
+import agents as openai_agents
 from agents.memory import Session, SQLiteSession
+
 from config import settings
 
 logger = logging.getLogger(__name__)
@@ -37,7 +43,7 @@ PORTFOLIO_INFO = """
 """
 
 
-def create_portfolio_agent() -> Agent:
+def create_portfolio_agent() -> openai_agents.Agent:
     """
     Create and configure the portfolio assistant agent.
     
@@ -45,13 +51,13 @@ def create_portfolio_agent() -> Agent:
         Configured Agent instance
     """
     # Initialize OpenAI client with Gemini API
-    client = AsyncOpenAI(
+    client = openai_agents.AsyncOpenAI(
         api_key=settings.gemini_api_key,
         base_url=settings.gemini_base_url,
     )
     
     # Configure the LLM model
-    model = OpenAIChatCompletionsModel(
+    model = openai_agents.OpenAIChatCompletionsModel(
         model=settings.default_model,
         openai_client=client,
     )
@@ -78,7 +84,7 @@ learn about the portfolio owner in a friendly, concise, and professional manner.
 """
     
     # Create the agent
-    agent = Agent(
+    agent = openai_agents.Agent(
         name="PortfolioAssistant",
         instructions=instructions,
         model=model,
@@ -105,10 +111,10 @@ def get_agent_session(session_id: str) -> Session:
 
 
 # Global agent instance
-_portfolio_agent: Optional[Agent] = None
+_portfolio_agent: Optional[openai_agents.Agent] = None
 
 
-def get_portfolio_agent() -> Agent:
+def get_portfolio_agent() -> openai_agents.Agent:
     """Get the global portfolio agent instance (singleton)."""
     global _portfolio_agent
     if _portfolio_agent is None:

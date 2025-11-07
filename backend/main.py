@@ -45,7 +45,7 @@ async def lifespan(app: FastAPI):
     
     # Initialize agent (lazy loading, but pre-initialize for faster first request)
     try:
-        from agents import get_portfolio_agent
+        from portfolio_agents import get_portfolio_agent
         agent = get_portfolio_agent()
         logger.info("Portfolio agent initialized successfully")
     except Exception as e:
@@ -127,7 +127,7 @@ try:
     @cl.on_chat_start
     async def chainlit_start():
         """Chainlit chat start handler."""
-        from agents import get_portfolio_agent
+        from portfolio_agents import get_portfolio_agent
         agent = get_portfolio_agent()
         cl.Message(
             content="Hello! I'm your professional portfolio assistant. How can I help you today?"
@@ -136,13 +136,13 @@ try:
     @cl.on_message
     async def chainlit_message(message: cl.Message):
         """Chainlit message handler."""
-        from agents import Runner
-        from agents import get_portfolio_agent, get_agent_session
+        import agents as openai_agents
+        from portfolio_agents import get_portfolio_agent, get_agent_session
         
         agent = get_portfolio_agent()
         session = get_agent_session("chainlit_session")
         
-        result = await Runner.run(
+        result = await openai_agents.Runner.run(
             starting_agent=agent,
             input=message.content,
             session=session,

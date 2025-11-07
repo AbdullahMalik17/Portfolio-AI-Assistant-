@@ -6,9 +6,16 @@ import logging
 from typing import Optional
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
-from agents import Runner
+import sys
+from pathlib import Path
 
-from agents import get_portfolio_agent, get_agent_session
+# Fix import - use OpenAI agents package
+backend_path = Path(__file__).parent.parent
+if str(backend_path) not in sys.path:
+    sys.path.insert(0, str(backend_path))
+
+import agents as openai_agents
+from portfolio_agents import get_portfolio_agent, get_agent_session
 from config import settings
 
 logger = logging.getLogger(__name__)
@@ -96,7 +103,7 @@ async def chat(request: ChatRequest):
         
         # Run the agent
         try:
-            result = await Runner.run(
+            result = await openai_agents.Runner.run(
                 starting_agent=agent,
                 input=request.message.strip(),
                 session=session,
@@ -158,7 +165,7 @@ async def chat_sync(request: ChatRequest):
             session = get_agent_session(session_id)
         
         # Use synchronous runner
-        result = Runner.run_sync(
+        result = openai_agents.Runner.run_sync(
             starting_agent=agent,
             input=request.message.strip(),
             session=session,
@@ -180,11 +187,37 @@ async def chat_sync(request: ChatRequest):
 
 
 # Compatibility endpoint for frontend (/api/chat)
-@compat_router.post("/chat", response_model=ChatResponse)
+@compat_router.post("/chat")
 async def chat_compat(request: ChatRequest):
     """
     Compatibility endpoint for frontend that expects /api/chat.
-    This is a wrapper around the main chat endpoint.
+    Returns response in the format expected by the frontend.
     """
-    return await chat(request)
+    try:
+        # Extract just the message if it contains the system prefix
+        message = request.message
+        if message.startswith("You are an assistant"):
+            # Frontend sends message with system prefix, extract just the user message
+            lines = message.split("\n\nUser: ")
+            if len(lines) > 1:
+                message = lines[-1]
+        
+        # Create new request with cleaned message
+        clean_request = ChatRequest(message=message, session_id=request.session_id)
+        
+        # Get response
+        result = await chat(clean_request)
+        
+        # Return in format expected by frontend
+        return {
+            "success": result.success,
+            "response": result.response,
+            "model": result.model,
+        }
+    except Exception as e:
+        logger.error(f"Error in compat endpoint: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error processing request: {str(e)}"
+        )
 
