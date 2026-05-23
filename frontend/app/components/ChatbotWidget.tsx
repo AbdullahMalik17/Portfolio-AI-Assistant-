@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { scroller } from 'react-scroll';
 import {
   Send, Bot, User, Loader2, Minimize2,
   Sparkles, ThumbsUp, ThumbsDown, Copy,
@@ -137,6 +138,58 @@ export default function ChatbotWidget() {
     return "Thanks for your interest! I can tell you about Abdullah's skills, projects, experience, or how to contact him. What would you like to know?";
   }
 
+  // Execute actions triggered by the AI agent
+  const executeBrowserAction = useCallback((action: string, args?: { section?: string }) => {
+    switch (action) {
+      case 'scroll_to_section':
+        if (args && args.section) {
+          const sectionId = args.section.toLowerCase();
+          const element = document.getElementById(sectionId);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setToast(`Scrolling to ${sectionId}...`);
+          } else {
+            scroller.scrollTo(sectionId, {
+              duration: 500,
+              delay: 0,
+              smooth: 'easeInOutQuart',
+              offset: -70
+            });
+            setToast(`Scrolling to ${sectionId}...`);
+          }
+        }
+        break;
+      case 'open_resume':
+        window.open('/Abdullah_resume.pdf', '_blank');
+        setToast('Opening resume...');
+        break;
+      case 'focus_contact_form':
+        const contactSection = document.getElementById('contact');
+        if (contactSection) {
+          contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          scroller.scrollTo('contact', {
+            duration: 500,
+            smooth: 'easeInOutQuart',
+            offset: -70
+          });
+        }
+        setTimeout(() => {
+          const nameInput = document.querySelector('input[placeholder*="Name"]') as HTMLInputElement;
+          const emailInput = document.querySelector('input[placeholder*="Email"]') as HTMLInputElement;
+          if (nameInput) {
+            nameInput.focus();
+            setToast('Focusing contact form... Write your message!');
+          } else if (emailInput) {
+            emailInput.focus();
+          }
+        }, 800);
+        break;
+      default:
+        console.warn('Unknown browser action:', action);
+    }
+  }, []);
+
   // Send message with streaming support
   const sendMessage = useCallback(async (textOverride?: string) => {
     const text = (textOverride || input).trim();
@@ -201,6 +254,9 @@ export default function ChatbotWidget() {
               if (line.startsWith('data: ') && line !== 'data: [DONE]') {
                 try {
                   const data = JSON.parse(line.slice(6));
+                  if (data.action) {
+                    executeBrowserAction(data.action, data.args);
+                  }
                   if (data.text) {
                     fullText += data.text;
                     const captured = fullText;
@@ -221,6 +277,9 @@ export default function ChatbotWidget() {
       } else {
         // JSON response (fallback mode)
         const data = await res.json();
+        if (data.action) {
+          executeBrowserAction(data.action, data.args);
+        }
         const reply = data.response || getSimulatedResponse(text);
         setMessages(prev => [...prev, {
           id: assistantId, role: 'assistant', content: reply, timestamp: new Date(),
@@ -235,7 +294,7 @@ export default function ChatbotWidget() {
       setIsLoading(false);
       inputRef.current?.focus();
     }
-  }, [input, isLoading]);
+  }, [input, isLoading, messages, executeBrowserAction]);
 
   // Custom event handler for CommandPalette / ContextMenu / DeveloperTerminal
   useEffect(() => {

@@ -7,6 +7,7 @@ import Button from './Button';
 interface ProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
+  mcpMarketUrl?: string;
   project: {
     title: string;
     description: string;
@@ -22,7 +23,7 @@ interface ProjectModalProps {
   };
 }
 
-export default function ProjectModal({ isOpen, onClose, project }: ProjectModalProps) {
+export default function ProjectModal({ isOpen, onClose, project, mcpMarketUrl }: ProjectModalProps) {
   // Lock body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
@@ -188,6 +189,33 @@ export default function ProjectModal({ isOpen, onClose, project }: ProjectModalP
                             </li>
                           ))}
                         </ul>
+                      </div>
+                    )}
+
+                    {/* Verified External Listings Node (MCP Market) */}
+                    {mcpMarketUrl && (
+                      <div className="mb-6">
+                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                          <span>🔗</span> Verified External Listings
+                        </h3>
+                        <div className="flex flex-col gap-3">
+                          <a
+                            href={mcpMarketUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-violet-500/10 border border-violet-500/25 text-violet-300 hover:bg-violet-500/20 hover:border-violet-500/50 transition-all group/mcp"
+                          >
+                            <span className="relative flex h-3 w-3 shrink-0">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-3 w-3 bg-violet-500"></span>
+                            </span>
+                            <div className="flex flex-col flex-1">
+                              <span className="font-bold text-sm">MCP Market Listing</span>
+                              <span className="text-xs text-violet-400/70 mt-0.5">mcpmarket.com/ko/server/malikclaw</span>
+                            </div>
+                            <svg className="w-4 h-4 opacity-50 group-hover/mcp:opacity-100 transition-opacity shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                          </a>
+                        </div>
                       </div>
                     )}
 

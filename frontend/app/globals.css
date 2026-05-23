@@ -359,3 +359,23 @@ button, a, input, textarea, select, .glass, .glow-card {
 .chat-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.15);
 }
+
+/* Flagship Card Pulsing Glow */
+@keyframes flagship-glow {
+  0% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(236, 72, 153, 0.25);
+    border-color: rgba(236, 72, 153, 0.45);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.3);
+  }
+}
+
+.flagship-pulse {
+  animation: flagship-glow 6s infinite ease-in-out;
+}

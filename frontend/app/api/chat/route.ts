@@ -40,6 +40,42 @@ export async function POST(req: Request) {
       const model = genAI.getGenerativeModel({
         model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
         systemInstruction: PORTFOLIO_SYSTEM_PROMPT,
+        tools: [
+          {
+            functionDeclarations: [
+              {
+                name: 'scroll_to_section',
+                description: 'Scrolls the browser to a specific section of the portfolio (home, about, skills, certifications, projects, contact)',
+                parameters: {
+                  type: 'OBJECT',
+                  properties: {
+                    section: {
+                      type: 'STRING',
+                      description: 'The target section ID (home, about, skills, certifications, projects, contact)',
+                    },
+                  },
+                  required: ['section'],
+                },
+              },
+              {
+                name: 'open_resume',
+                description: 'Opens Abdullah Malik\'s PDF resume in a new browser tab',
+                parameters: {
+                  type: 'OBJECT',
+                  properties: {},
+                },
+              },
+              {
+                name: 'focus_contact_form',
+                description: 'Scrolls to and focuses the email/name input fields in the contact form',
+                parameters: {
+                  type: 'OBJECT',
+                  properties: {},
+                },
+              },
+            ],
+          },
+        ],
       });
 
       // Build conversation history for persistent memory
@@ -58,9 +94,18 @@ export async function POST(req: Request) {
         async start(controller) {
           try {
             for await (const chunk of result.stream) {
-              const text = chunk.text();
-              if (text) {
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`));
+              const functionCalls = chunk.functionCalls;
+              if (functionCalls && functionCalls.length > 0) {
+                for (const call of functionCalls) {
+                  controller.enqueue(
+                    encoder.encode(`data: ${JSON.stringify({ action: call.name, args: call.args })}\n\n`)
+                  );
+                }
+              } else {
+                const text = chunk.text();
+                if (text) {
+                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`));
+                }
               }
             }
             controller.enqueue(encoder.encode('data: [DONE]\n\n'));

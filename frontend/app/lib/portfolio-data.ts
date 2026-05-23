@@ -24,6 +24,8 @@ export interface Certification {
   skills: string[];
   credentialUrl: string;
   icon: string;
+  badge?: string; // special highlight badge label, e.g. "A2AS Certified"
+  agentId?: string; // e.g. "abdullahmalik17/deep-research-age"
 }
 
 export interface PersonalInfo {
@@ -65,8 +67,10 @@ export const PROJECTS: PortfolioProject[] = [
     description: "Ultra-lightweight, high-performance agentic AI assistant optimized for edge hardware ($10 Raspberry Pi/Android). Features Urdu-First support, mobile automation via ADB, and a privacy-first self-evolution engine. 99% more efficient than traditional AI gateways.",
     tech: ["Go", "React", "TypeScript", "ADB", "Model Context Protocol", "Docker"],
     link: "https://malikclaw.vercel.app/",
-    category: "Agentic AI / Edge"
-  },
+    category: "Agentic AI / Edge",
+    mcpMarketUrl: "https://mcpmarket.com/ko/server/malikclaw",
+  } as PortfolioProject & { mcpMarketUrl: string },
+  // NOTE: cast above is for type extension without breaking the interface
   {
     title: "AI Assistant Dashboard",
     description: "Intelligent portfolio dashboard with OpenAI integration featuring natural language processing, RAG-based knowledge retrieval, and automated task management. Handles 24/7 visitor inquiries with context-aware responses.",
@@ -112,6 +116,17 @@ export const SKILLS: SkillCategory[] = [
 
 // Certifications
 export const CERTIFICATIONS: Certification[] = [
+  {
+    title: "A2AS Behavior Certificate — deep-research-age",
+    issuer: "A2AS Registry (a2as.org)",
+    year: "2026",
+    description: "Certified by the A2AS Registry for AI Agent Security and Governance. This Behavior Certificate provides full transparency into the agentic capabilities of the deep-research-age agent across AI, application, and OS layers — verifying that it operates within audited, declared boundaries.",
+    skills: ["AI Security", "Agent Governance", "Behavior Certificates", "Agentic AI", "Deep Research"],
+    credentialUrl: "https://a2as.org/certified/agents/abdullahmalik17/deep-research-age",
+    icon: "🛡️",
+    badge: "A2AS Certified",
+    agentId: "abdullahmalik17/deep-research-age"
+  },
   {
     title: "Prompt Engineering Specialist",
     issuer: "Panaversity",

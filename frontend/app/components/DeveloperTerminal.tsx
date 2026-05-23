@@ -26,6 +26,9 @@ const DeveloperTerminal = () => {
   cat [sec] - View section details (e.g. 'cat about')
   whoami    - Display current user info
   xray      - Toggle Architecture X-Ray Mode
+  malikclaw - Display MalikClaw status & specs (Go Edge Assistant)
+  stats     - Print portfolio load & performance stats
+  skills    - Print grouped technical skills
   clear     - Clear terminal history
   contact   - Send a message (usage: contact "message")
   exit      - Close terminal`,
@@ -46,6 +49,54 @@ Access: Read-only`,
         const isActive = document.body.classList.contains('xray-mode');
         return `X-Ray Architecture Mode: ${isActive ? 'ENABLED' : 'DISABLED'}`;
     },
+
+    malikclaw: () => `
+   _ __  __      _ _ _    ___ _                  
+  |  _ \\/  |__ _| (_) | _/ __| |__ _ __ __ __ 
+  | |_) | |/ _\` | | | |/ / (__| / _\` \\ V  V / 
+  | _.__/_|\\__,_|_|_|_|\\_\\\\___|_\\__,_|\\_/\\_/  
+  Edge AI Agent Ecosystem (Bilingual Urdu-First)
+  
+  System Status: 🟢 ACTIVE (Local Node)
+  Hardware Specs: ARM Cortex-A72 (Raspberry Pi/Edge Optimized)
+  Active Contexts: Terminal Interface, Gmail Node, Odoo CRM, ADB Automation
+  Resource Footprint:
+    - RAM Consumption: ~7.4 MB (<10MB target)
+    - Boot Speed: 420ms
+    - Execution Latency: <1.2s per agentic loop
+  Verification:
+    - MCP Market Status: Listed (mcpmarket.com/server/malikclaw)
+    - Safety Compliance: A2AS Behavior Certified (AI Agent Security)
+`,
+
+    stats: () => `
+  =========================================
+  Portfolio Build & Load Performance Metrics
+  =========================================
+  Host Environment: Vercel Serverless (Edge Network)
+  Framework: Next.js 15.1.0 (App Router)
+  Hydration Speed (TBT): 0ms (Fully Optimized static pages)
+  Lighthouse Audit Scores:
+    - 🟢 Performance: 98/100
+    - 🟢 Accessibility: 100/100
+    - 🟢 Best Practices: 100/100
+    - 🟢 SEO: 100/100
+  Core Web Vitals:
+    - LCP (Largest Contentful Paint): 0.8s
+    - FID (First Input Delay): 12ms
+    - CLS (Cumulative Layout Shift): 0.00
+`,
+
+    skills: () => `
+  -----------------------------------------
+  Abdullah Malik's Technical Skills Directory
+  -----------------------------------------
+  [Frontend]   HTML5, CSS3, JavaScript, TypeScript, Next.js, React, Tailwind CSS
+  [Backend]    Python, FastAPI, Node.js, REST APIs, WebSockets
+  [AI / ML]    OpenAI SDK, Google Gemini, Claude, LangChain, Pinecone, pgvector
+  [DevOps]     Docker, Kubernetes, GitHub Actions, Vercel, Fly.io, Linux Shell
+  [Specialty]  Model Context Protocol (MCP), Autonomous Agentic Workflows
+`,
 
     cat: (args) => {
       const section = args[0]?.toLowerCase();

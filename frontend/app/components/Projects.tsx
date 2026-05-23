@@ -7,6 +7,12 @@ import ProjectModal from './ProjectModal';
 import Button from './Button';
 import ProjectCard3D from './ProjectCard3D';
 
+// Extend list type to carry optional extra links per project
+type ProjectExtra = {
+  mcpMarketUrl?: string;
+  certificateUrl?: string;
+};
+
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -14,15 +20,30 @@ const Projects = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [sortBy, setSortBy] = useState<'recent' | 'alphabetical'>('recent');
 
-  const projects = useMemo(() => [
+  const projects: ({
+    title: string;
+    description: string;
+    longDescription: string;
+    tech: string[];
+    image: string;
+    link: string;
+    githubLink?: string;
+    liveLink?: string;
+    features: string[];
+    technologies: string[];
+    challenges: string[];
+    results: string[];
+  } & ProjectExtra)[] = useMemo(() => [
     {
       title: 'MalikClaw',
       description: 'Ultra-lightweight, high-performance agentic AI assistant optimized for edge hardware ($10 Raspberry Pi/Android) with Urdu-First support.',
-      longDescription: 'MalikClaw is a revolutionary personal AI assistant designed to bring advanced agentic capabilities to low-resource edge hardware. Built with Go for maximum performance, it features a privacy-first architecture, Urdu-First bilingual support, and mobile automation capabilities via ADB. It is 99% more efficient than traditional AI gateways, operating on less than 10MB of RAM.',
+      longDescription: 'MalikClaw is a revolutionary personal AI assistant designed to bring advanced agentic capabilities to low-resource edge hardware. Built with Go for maximum performance, it features a privacy-first architecture, Urdu-First bilingual support, and mobile automation capabilities via ADB. It is 99% more efficient than traditional AI gateways, operating on less than 10MB of RAM. MalikClaw is officially listed on MCP Market and holds an A2AS Behavior Certificate for AI Agent Security & Governance.',
       tech: ['Go', 'React', 'TypeScript', 'ADB', 'MCP'],
       image: '🦅',
       link: 'https://malikclaw.vercel.app/',
       githubLink: 'https://github.com/AbdullahMalik17/malikclaw',
+      mcpMarketUrl: 'https://mcpmarket.com/ko/server/malikclaw',
+      certificateUrl: '/Muhammad_Abdullah_Certificate.pdf',
       features: [
         'Edge-Optimized Performance (<10MB RAM, <1s boot time)',
         'Urdu-First Ecosystem with bilingual onboarding and RTL support',
@@ -30,6 +51,7 @@ const Projects = () => {
         'Model Context Protocol (MCP) integration for Gmail and Odoo',
         'Self-Evolution Engine for autonomous code improvement',
         'Automated Heartbeat tasks and multi-channel support (10+ channels)',
+        'Listed on MCP Market — globally discoverable as an MCP server',
       ],
       technologies: ['Go (Golang)', 'React', 'TypeScript', 'ADB', 'Docker', 'MCP', 'Shell Scripting'],
       challenges: [
@@ -41,6 +63,7 @@ const Projects = () => {
         'Achieved 99% reduction in memory footprint compared to traditional AI gateways',
         'Successfully deployed on $10 hardware (Raspberry Pi Zero) with full agentic capabilities',
         'Built a unique "Urdu-First" AI entry point for the regional developer ecosystem',
+        'Officially listed on MCP Market as a globally discoverable AI agent server',
       ],
     },
     {
@@ -497,6 +520,7 @@ const Projects = () => {
             >
               {filteredAndSortedProjects.map((project) => {
                 const originalIndex = projects.findIndex(p => p.title === project.title);
+                const isFlagship = project.title === 'MalikClaw' || project.title.includes('Digital FTE');
                 return (
                 <motion.div
                   key={project.title}
@@ -507,8 +531,12 @@ const Projects = () => {
                   data-tech="Framer Motion"
                 >
                   <ProjectCard3D
-                    className="group glass glow-card rounded-2xl p-8 hover:shadow-2xl transition-all duration-500 flex flex-col h-full bg-[color:var(--background-secondary)]/40 backdrop-blur-2xl border border-white/5 hover:border-[color:var(--accent)]/30"
-                    glareColor="rgba(99, 102, 241, 0.2)"
+                    className={`group glass glow-card rounded-2xl p-8 hover:shadow-2xl transition-all duration-500 flex flex-col h-full bg-[color:var(--background-secondary)]/40 backdrop-blur-2xl ${
+                      isFlagship 
+                        ? 'flagship-pulse hover:border-[color:var(--accent-secondary)]/60' 
+                        : 'border-white/5 hover:border-[color:var(--accent)]/30'
+                    }`}
+                    glareColor={isFlagship ? 'rgba(236, 72, 153, 0.25)' : 'rgba(99, 102, 241, 0.2)'}
                   >
                     <div className="text-6xl mb-6 transform group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500">
                       {project.image}
@@ -571,9 +599,50 @@ const Projects = () => {
                           </a>
                         )}
                       </div>
+
+                      {/* MCP Market + A2AS Certificate Node Strip (MalikClaw only) */}
+                      {(project.mcpMarketUrl || project.certificateUrl) && (
+                        <div className="pt-3 mt-1 border-t border-white/5 flex flex-col gap-2 relative z-30">
+                          {project.mcpMarketUrl && (
+                            <a
+                              href={project.mcpMarketUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-violet-500/10 border border-violet-500/25 text-violet-300 hover:bg-violet-500/20 hover:border-violet-500/50 transition-all text-xs font-semibold group/mcp"
+                            >
+                              <span className="relative flex h-2 w-2 shrink-0">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
+                              </span>
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M12 5l7 7-7 7" /></svg>
+                              MCP Market Listing
+                              <svg className="w-3 h-3 ml-auto opacity-50 group-hover/mcp:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                            </a>
+                          )}
+                          {project.certificateUrl && (
+                            <a
+                              href={project.certificateUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 hover:bg-emerald-500/20 hover:border-emerald-500/50 transition-all text-xs font-semibold group/cert"
+                            >
+                              <span className="relative flex h-2 w-2 shrink-0">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                              </span>
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                              A2AS Certificate
+                              <svg className="w-3 h-3 ml-auto opacity-50 group-hover/cert:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                            </a>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </ProjectCard3D>
                 </motion.div>
+
               );
             })}
             </motion.div>
@@ -589,6 +658,7 @@ const Projects = () => {
               ...projects[selectedProject],
               tags: projects[selectedProject].tech,
             }}
+            mcpMarketUrl={projects[selectedProject]?.mcpMarketUrl}
           />
         )}
       </div>
