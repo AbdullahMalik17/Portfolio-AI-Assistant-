@@ -9,12 +9,6 @@ const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
-    company: '',
-    subject: '',
-    projectType: '',
-    budget: '',
-    timeline: '',
     message: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -100,12 +94,6 @@ const Contact = () => {
         setFormData({
           name: '',
           email: '',
-          phone: '',
-          company: '',
-          subject: '',
-          projectType: '',
-          budget: '',
-          timeline: '',
           message: ''
         });
       } else {
@@ -174,131 +162,6 @@ const Contact = () => {
                   required
                   className="bg-black/20"
                 />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                <FloatingInput
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  label="Phone Number"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  isOptional
-                  className="bg-black/20"
-                />
-                <FloatingInput
-                  type="text"
-                  id="company"
-                  name="company"
-                  label="Company"
-                  value={formData.company}
-                  onChange={handleChange}
-                  isOptional
-                  maxLength={100}
-                  className="bg-black/20"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                <FloatingInput
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  label="Subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  isRequired
-                  required
-                  minLength={5}
-                  maxLength={100}
-                  className="bg-black/20"
-                />
-                <div className="relative group">
-                  <label
-                    htmlFor="projectType"
-                    className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2 ml-1"
-                  >
-                    Project Type <span className="text-gray-600">(Optional)</span>
-                  </label>
-                  <select
-                    id="projectType"
-                    name="projectType"
-                    value={formData.projectType}
-                    onChange={handleChange}
-                    className="w-full px-5 py-4 rounded-xl bg-black/20 border border-white/10 focus:border-[color:var(--accent)] focus:ring-4 focus:ring-[color:var(--accent)]/10 outline-none transition-all text-white appearance-none cursor-pointer"
-                  >
-                    <option value="" className="bg-[color:var(--background)]">Select project type</option>
-                    <option value="web-development" className="bg-[color:var(--background)]">Web Development</option>
-                    <option value="ai-integration" className="bg-[color:var(--background)]">AI Integration</option>
-                    <option value="full-stack" className="bg-[color:var(--background)]">Full-Stack Application</option>
-                    <option value="mobile-app" className="bg-[color:var(--background)]">Mobile Application</option>
-                    <option value="consulting" className="bg-[color:var(--background)]">Consulting</option>
-                    <option value="other" className="bg-[color:var(--background)]">Other</option>
-                  </select>
-                  <div className="absolute right-4 bottom-4 pointer-events-none text-gray-500">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                <div className="relative group">
-                  <label
-                    htmlFor="budget"
-                    className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2 ml-1"
-                  >
-                    Budget Range <span className="text-gray-600">(Optional)</span>
-                  </label>
-                  <select
-                    id="budget"
-                    name="budget"
-                    value={formData.budget}
-                    onChange={handleChange}
-                    className="w-full px-5 py-4 rounded-xl bg-black/20 border border-white/10 focus:border-[color:var(--accent)] focus:ring-4 focus:ring-[color:var(--accent)]/10 outline-none transition-all text-white appearance-none cursor-pointer"
-                  >
-                    <option value="" className="bg-[color:var(--background)]">Select budget range</option>
-                    <option value="less-than-5k" className="bg-[color:var(--background)]">Less than $5,000</option>
-                    <option value="5k-10k" className="bg-[color:var(--background)]">$5,000 - $10,000</option>
-                    <option value="10k-25k" className="bg-[color:var(--background)]">$10,000 - $25,000</option>
-                    <option value="25k-50k" className="bg-[color:var(--background)]">$25,000 - $50,000</option>
-                    <option value="50k-plus" className="bg-[color:var(--background)]">$50,000+</option>
-                  </select>
-                  <div className="absolute right-4 bottom-4 pointer-events-none text-gray-500">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </div>
-                <div className="relative group">
-                  <label
-                    htmlFor="timeline"
-                    className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2 ml-1"
-                  >
-                    Project Timeline <span className="text-gray-600">(Optional)</span>
-                  </label>
-                  <select
-                    id="timeline"
-                    name="timeline"
-                    value={formData.timeline}
-                    onChange={handleChange}
-                    className="w-full px-5 py-4 rounded-xl bg-black/20 border border-white/10 focus:border-[color:var(--accent)] focus:ring-4 focus:ring-[color:var(--accent)]/10 outline-none transition-all text-white appearance-none cursor-pointer"
-                  >
-                    <option value="" className="bg-[color:var(--background)]">Select timeline</option>
-                    <option value="asap" className="bg-[color:var(--background)]">ASAP</option>
-                    <option value="1-3-months" className="bg-[color:var(--background)]">1-3 Months</option>
-                    <option value="3-6-months" className="bg-[color:var(--background)]">3-6 Months</option>
-                    <option value="6-plus-months" className="bg-[color:var(--background)]">6+ Months</option>
-                    <option value="flexible" className="bg-[color:var(--background)]">Flexible</option>
-                  </select>
-                  <div className="absolute right-4 bottom-4 pointer-events-none text-gray-500">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </div>
               </div>
               <FloatingTextarea
                 id="message"

@@ -48,22 +48,6 @@ const GitHubStats = dynamic(() => import('./components/GitHubStats'), {
   ),
 });
 
-const Testimonials = dynamic(() => import('./components/Testimonials'), {
-  loading: () => (
-    <section className="py-20 bg-[color:var(--background)]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="h-6 bg-[color:var(--accent)]/10 rounded w-32 mx-auto mb-8 animate-pulse"></div>
-        <div className="max-w-4xl mx-auto">
-          <div className="glass rounded-2xl p-8 animate-pulse space-y-3">
-            <div className="h-20 bg-[color:var(--accent)]/5 rounded"></div>
-            <div className="h-3 bg-[color:var(--accent)]/5 rounded w-24 mx-auto"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-  ),
-});
-
 // Non-critical widgets - load asynchronously
 const WhatsAppWidget = dynamic(() => import('./components/WhatsAppWidget'), {
   loading: () => null,
@@ -84,7 +68,6 @@ export default function Home() {
       <AchievementStats />
       <Projects />
       <GitHubStats />
-      <Testimonials />
       <Contact />
       
       {/* Footer */}

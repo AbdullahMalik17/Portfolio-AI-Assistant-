@@ -34,12 +34,12 @@ const Hero = () => {
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight animate-fade-in-up delay-100">
-            Building the{' '}
+            Building{' '}
             <span className="text-shimmer">
-              Future of AI
+              Autonomous AI Agents
             </span>
             <br />
-            One Line at a Time
+            & Enterprise Digital Employees
           </h1>
 
           <p className="text-lg sm:text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto animate-fade-in-up delay-200 leading-relaxed">
@@ -59,7 +59,7 @@ const Hero = () => {
               />
             </span>
             <br className="hidden md:block" />
-            Creating intelligent solutions for complex problems.
+            Creating intelligent solutions with advanced edge device execution capabilities.
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in-up delay-300">

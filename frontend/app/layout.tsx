@@ -19,71 +19,47 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://portfolio-ai-assistant-of-malik-five.vercel.app'),
-  title: "Abdullah Malik - Full-Stack Developer & AI Specialist",
-  description: "Professional portfolio of Abdullah Malik showcasing expertise in Agentic AI Systems, Full-Stack Development, and Cloud Technologies. Specializing in Next.js, Python, OpenAI Agent SDK, and modern web applications.",
-  keywords: [
-    "Abdullah Malik",
-    "Full-Stack Developer",
-    "AI Specialist",
-    "Agentic AI",
-    "OpenAI Agent SDK",
-    "Next.js Developer",
-    "React Developer",
-    "Python Developer",
-    "TypeScript",
-    "Portfolio",
-    "AI Development",
-    "Web Development",
-    "Cloud Technologies",
-    "Kubernetes",
-    "Docker",
-  ],
-  authors: [{ name: "Abdullah Malik", url: "https://github.com/AbdullahMalik17" }],
-  creator: "Abdullah Malik",
-  publisher: "Abdullah Malik",
+  metadataBase: new URL('https://portfolio-ai-assistant-of-malik.vercel.app'),
+  title: "Malik | AI Agent Engineer",
+  description: "I engineer lightweight, autonomous AI agents and enterprise digital employees.",
+  keywords: ["AI Engineer", "Next.js 15", "TypeScript", "LLM", "Agentic Systems"],
+  authors: [{ name: "Malik", url: "https://portfolio-ai-assistant-of-malik.vercel.app/" }],
+  creator: "Malik",
+  publisher: "Malik",
   robots: {
     index: true,
     follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
   },
   openGraph: {
+    title: "Malik | AI Agent Engineer",
+    description: "I engineer lightweight, autonomous AI agents and enterprise digital employees.",
+    url: "https://portfolio-ai-assistant-of-malik.vercel.app/",
+    siteName: "Malik AI Portfolio",
     type: "website",
-    locale: "en_US",
-    url: "https://portfolio-ai-assistant-of-malik-five.vercel.app/",
-    title: "Abdullah Malik - Full-Stack Developer & AI Specialist",
-    description: "Professional portfolio showcasing expertise in Agentic AI Systems, Full-Stack Development with Next.js, Python, and Cloud Technologies.",
-    siteName: "Abdullah Malik Portfolio",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Abdullah Malik - Full-Stack Developer & AI Specialist",
+        alt: "Malik | AI Agent Engineer",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Abdullah Malik - Full-Stack Developer & AI Specialist",
-    description: "Professional portfolio showcasing expertise in Agentic AI Systems and Full-Stack Development",
-    creator: "@AbdullahMalik",
+    title: "Malik | AI Agent Engineer",
+    description: "I engineer lightweight, autonomous AI agents and enterprise digital employees.",
+    creator: "@Malik",
     images: ["/og-image.png"],
   },
   verification: {
-    google: "your-google-verification-code", // Add your verification code
+    google: "your-google-verification-code",
   },
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Abdullah Malik",
+    title: "Malik Portfolio",
   },
   formatDetection: {
     telephone: false,
@@ -104,10 +80,28 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // JSON-LD Schema for direct LLM and Search Engine parsing
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Malik",
+    "url": "https://portfolio-ai-assistant-of-malik.vercel.app/",
+    "jobTitle": "AI Agent Engineer",
+    "knowsAbout": ["Next.js", "TypeScript", "AI Agents", "LLM Integration", "Autonomous Systems"],
+    "mainEntityOfPage": {
+      "@type": "WebSite",
+      "@id": "https://portfolio-ai-assistant-of-malik.vercel.app/"
+    }
+  };
+
   return (
     <html lang="en">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
@@ -120,52 +114,6 @@ export default function RootLayout({
           <PWAInstallPrompt />
           <CommandPalette />
         </ClientProviders>
-
-        {/* JSON-LD Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Person",
-              name: "Abdullah Malik",
-              jobTitle: "Full-Stack Developer & AI Specialist",
-              description: "Professional software developer specializing in Agentic AI Systems, Full-Stack Development, and Cloud Technologies",
-              url: "https://portfolio-ai-assistant-of-malik-five.vercel.app/",
-              sameAs: [
-                "https://github.com/AbdullahMalik17",
-                "https://www.linkedin.com/in/muhammad-abdullah-athar",
-                "https://www.instagram.com/muhammadabdullah17337/",
-              ],
-              email: "muhammadabdullah51700@gmail.com",
-              knowsAbout: [
-                "Artificial Intelligence",
-                "Agentic AI",
-                "Full-Stack Development",
-                "Next.js",
-                "React",
-                "Python",
-                "TypeScript",
-                "OpenAI Agent SDK",
-                "Cloud Technologies",
-                "Kubernetes",
-                "Docker",
-              ],
-              alumniOf: [
-                {
-                  "@type": "Organization",
-                  name: "Panaversity",
-                  description: "Agentic AI Development",
-                },
-                {
-                  "@type": "Organization",
-                  name: "PIAIC",
-                  description: "Artificial Intelligence",
-                },
-              ],
-            }),
-          }}
-        />
       </body>
     </html>
   );

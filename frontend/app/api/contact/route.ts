@@ -4,20 +4,18 @@ import { saveContact } from '@/app/lib/db';
 interface ContactFormData {
   name: string;
   email: string;
-  phone?: string;
-  subject: string;
   message: string;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: ContactFormData = await request.json();
-    const { name, email, phone, subject, message } = body;
+    const { name, email, message } = body;
 
     // Validate required fields
-    if (!name || !email || !subject || !message) {
+    if (!name || !email || !message) {
       return NextResponse.json(
-        { success: false, error: 'Name, email, subject, and message are required' },
+        { success: false, error: 'Name, email, and message are required' },
         { status: 400 }
       );
     }
@@ -33,7 +31,7 @@ export async function POST(request: NextRequest) {
 
     // Save to database first - this is the primary action
     console.log('Saving contact to database...');
-    const dbResult = await saveContact({ name, email, phone, subject, message });
+    const dbResult = await saveContact({ name, email, message });
 
     if (!dbResult.success) {
       console.error('Failed to save to database:', dbResult.error);
@@ -61,7 +59,7 @@ export async function POST(request: NextRequest) {
           from: 'Portfolio Contact Form <onboarding@resend.dev>',
           to: [recipientEmail],
           replyTo: email,
-          subject: `New Contact: ${subject}`,
+          subject: `New Contact from ${name}`,
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
               <div style="background: linear-gradient(135deg, #06b6d4, #8b5cf6); color: white; padding: 20px; text-align: center;">
@@ -70,8 +68,6 @@ export async function POST(request: NextRequest) {
               <div style="background: #f9f9f9; padding: 30px;">
                 <p><strong>Name:</strong> ${name}</p>
                 <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
-                ${phone ? `<p><strong>Phone:</strong> ${phone}</p>` : ''}
-                <p><strong>Subject:</strong> ${subject}</p>
                 <p><strong>Message:</strong></p>
                 <div style="background: white; padding: 15px; border-left: 3px solid #06b6d4;">${message}</div>
               </div>

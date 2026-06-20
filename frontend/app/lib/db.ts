@@ -4,8 +4,6 @@ export interface Contact {
   id: number;
   name: string;
   email: string;
-  phone?: string;
-  subject: string;
   message: string;
   created_at: Date;
   status: 'new' | 'read' | 'replied';
@@ -22,8 +20,6 @@ export async function initContactsTable() {
         id SERIAL PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
         email VARCHAR(255) NOT NULL,
-        phone VARCHAR(20),
-        subject VARCHAR(200) NOT NULL,
         message TEXT NOT NULL,
         status VARCHAR(20) DEFAULT 'new',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -53,8 +49,8 @@ export async function initContactsTable() {
 export async function saveContact(contact: Omit<Contact, 'id' | 'created_at' | 'status'>) {
   try {
     const result = await sql`
-      INSERT INTO contacts (name, email, phone, subject, message, status)
-      VALUES (${contact.name}, ${contact.email}, ${contact.phone || null}, ${contact.subject}, ${contact.message}, 'new')
+      INSERT INTO contacts (name, email, message, status)
+      VALUES (${contact.name}, ${contact.email}, ${contact.message}, 'new')
       RETURNING id, created_at;
     `;
 
