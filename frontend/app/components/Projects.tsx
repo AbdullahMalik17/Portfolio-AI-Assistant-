@@ -26,9 +26,8 @@ const Projects = () => {
     longDescription: string;
     tech: string[];
     image: string;
-    link: string;
-    githubLink?: string;
-    liveLink?: string;
+    githubUrl?: string | null;
+    liveUrl?: string | null;
     features: string[];
     technologies: string[];
     challenges: string[];
@@ -40,8 +39,8 @@ const Projects = () => {
       longDescription: 'MalikClaw is a revolutionary personal AI assistant designed to bring advanced agentic capabilities to low-resource edge hardware. Built with Go for maximum performance, it features a privacy-first architecture, Urdu-First bilingual support, and mobile automation capabilities via ADB. It is 99% more efficient than traditional AI gateways, operating on less than 10MB of RAM. MalikClaw is officially listed on MCP Market and holds an A2AS Behavior Certificate for AI Agent Security & Governance.',
       tech: ['Go', 'React', 'TypeScript', 'ADB', 'MCP'],
       image: '🦅',
-      link: 'https://malikclaw.vercel.app/',
-      githubLink: 'https://github.com/AbdullahMalik17/malikclaw',
+      githubUrl: 'https://github.com/AbdullahMalik17/malikclaw',
+      liveUrl: 'https://malikclaw.vercel.app/',
       mcpMarketUrl: 'https://mcpmarket.com/ko/server/malikclaw',
       certificateUrl: '/Muhammad_Abdullah_Certificate.pdf',
       features: [
@@ -72,8 +71,8 @@ const Projects = () => {
       longDescription: 'Abdullah Junior is an elite Digital Full-Time Equivalent (FTE) - a comprehensive AI agent system designed to act as your personal and business autopilot. Features a dual-agent architecture with Cloud Agent (Sentry) for continuous monitoring and Local Agent (Executive) for secure task execution, orchestrated by an intelligent Brain system.',
       tech: ['Python', 'FastAPI', 'Gemini AI', 'Claude AI', 'MCP Servers'],
       image: '🤖',
-      link: 'https://github.com/AbdullahMalik17/Digital-FTE',
-      githubLink: 'https://github.com/AbdullahMalik17/Digital-FTE',
+      githubUrl: 'https://github.com/AbdullahMalik17/Digital-FTE',
+      liveUrl: null,
       features: [
         '24/7 automated monitoring of Gmail, WhatsApp, LinkedIn, and Social Media',
         'Dual-Agent Architecture: Cloud Sentry (read-only) + Local Executive (full access)',
@@ -100,8 +99,8 @@ const Projects = () => {
       longDescription: 'Complete AI-powered customer support system that autonomously handles customer inquiries across multiple channels. Features semantic search with pgvector, intelligent escalation detection, and comprehensive ticket management with 100% completion of all 9 development phases.',
       tech: ['Python', 'FastAPI', 'OpenAI GPT-4', 'PostgreSQL', 'Kafka'],
       image: '💬',
-      link: 'https://github.com/AbdullahMalik17/Hacathan_5',
-      githubLink: 'https://github.com/AbdullahMalik17/Hacathan_5',
+      githubUrl: 'https://github.com/AbdullahMalik17/Hacathan_5',
+      liveUrl: null,
       features: [
         'Multi-channel support: Email (Gmail), WhatsApp (Twilio), Web Forms',
         '5 AI function tools: create_ticket, get_customer_history, search_knowledge_base, send_email, escalate',
@@ -128,8 +127,8 @@ const Projects = () => {
       longDescription: 'Comprehensive educational platform designed to make Physical AI and Humanoid Robotics accessible to everyone. Features an intelligent RAG-powered chatbot that answers questions about robotics, embodied AI, and related concepts using vector search across curated educational content.',
       tech: ['Docusaurus', 'React', 'OpenAI', 'Pinecone', 'Tailwind'],
       image: '📘',
-      link: 'https://github.com/AbdullahMalik17/Physical_AI',
-      githubLink: 'https://github.com/AbdullahMalik17/Physical_AI',
+      githubUrl: 'https://github.com/AbdullahMalik17/Physical_AI',
+      liveUrl: null,
       features: [
         '43+ interactive, runnable code examples with live execution',
         'RAG-powered chatbot with semantic search across educational content',
@@ -155,8 +154,8 @@ const Projects = () => {
       longDescription: 'Advanced voice-activated AI assistant that prioritizes user privacy while providing intelligent, context-aware responses. Features custom wake word detection, semantic memory for personalized interactions, and the ability to control system functions through natural voice commands.',
       tech: ['Python', 'Gemini API', 'Whisper', 'ChromaDB', 'Picovoice'],
       image: '🎙️',
-      link: 'https://github.com/AbdullahMalik17/Voice-Assistant17',
-      githubLink: 'https://github.com/AbdullahMalik17/Voice-Assistant17',
+      githubUrl: 'https://github.com/AbdullahMalik17/Voice-Assistant17',
+      liveUrl: null,
       features: [
         'Custom wake word detection using Picovoice for hands-free activation',
         'Semantic memory system to remember user preferences and context',
@@ -182,9 +181,8 @@ const Projects = () => {
       longDescription: 'Full-stack AI-powered portfolio dashboard that serves as an intelligent interface for visitor interactions. Integrates OpenAI Assistants API with RAG capabilities to answer questions about projects, skills, and experience using natural language.',
       tech: ['Next.js', 'OpenAI SDK', 'Python'],
       image: '🤖',
-      link: 'https://portfolio-ai-assistant-of-malik-five.vercel.app/',
-      liveLink: 'https://portfolio-ai-assistant-of-malik-five.vercel.app/',
-      githubLink: 'https://github.com/AbdullahMalik17/Portfolio-AI-Assistant',
+      githubUrl: 'https://github.com/AbdullahMalik17/Portfolio-AI-Assistant',
+      liveUrl: 'https://portfolio-ai-assistant-of-malik-five.vercel.app/',
       features: [
         'AI chatbot with RAG for answering portfolio-related queries',
         'OpenAI Vector Store for semantic search across portfolio content',
@@ -210,8 +208,8 @@ const Projects = () => {
       longDescription: 'Intelligent coding assistant powered by OpenAI Agent SDK that helps developers with code generation, debugging, optimization, and learning. Features long-term memory, conversation tracking, and multi-step reasoning for complex coding tasks.',
       tech: ['OpenAI Agent SDK', 'MEM0', 'Python', 'Chainlit', 'Langfuse'],
       image: '💻',
-      link: 'https://github.com/AbdullahMalik17/Agentic_AI/tree/main/_Projects/Code_Assistant_agent',
-      githubLink: 'https://github.com/AbdullahMalik17/Agentic_AI/tree/main/_Projects/Code_Assistant_agent',
+      githubUrl: 'https://github.com/AbdullahMalik17/Agentic_AI/tree/main/_Projects/Code_Assistant_agent',
+      liveUrl: null,
       features: [
         'Multi-step code generation with reasoning traces',
         'Intelligent code debugging and error explanation',
@@ -229,34 +227,6 @@ const Projects = () => {
         'Reduced code debugging time by providing instant error analysis',
         'Improved code quality with intelligent optimization suggestions',
         'Created personalized learning experience with memory retention',
-      ],
-    },
-    {
-      title: 'Portfolio Website',
-      description: 'Modern, responsive portfolio website with smooth animations and dark mode support.',
-      longDescription: 'Professional portfolio website built with Next.js 15 showcasing projects, skills, and experience. Features smooth animations, dark mode, PWA capabilities, and an integrated AI chatbot for visitor interactions.',
-      tech: ['Next.js', 'TypeScript', 'Tailwind'],
-      image: '💼',
-      link: 'https://github.com/AbdullahMalik17/Portfolio-AI-Assistant',
-      githubLink: 'https://github.com/AbdullahMalik17/Portfolio-AI-Assistant',
-      liveLink: 'https://portfolio-ai-assistant-of-malik-five.vercel.app/',
-      features: [
-        'Responsive design with mobile-first approach',
-        'Smooth animations using Framer Motion',
-        'Dark/Light/Auto theme with system preference detection',
-        'Progressive Web App (PWA) with offline support',
-        'Command Palette (⌘K) for quick navigation',
-      ],
-      technologies: ['Next.js 15', 'TypeScript', 'Tailwind CSS 4', 'Framer Motion', 'React 19'],
-      challenges: [
-        'Implemented complex animations while maintaining performance',
-        'Built accessible command palette with keyboard navigation',
-        'Optimized for Core Web Vitals and SEO',
-      ],
-      results: [
-        'Achieved 95+ Lighthouse performance score',
-        'Created engaging user experience with smooth transitions',
-        'Successfully deployed as installable PWA',
       ],
     },
   ], []);
@@ -586,9 +556,21 @@ const Projects = () => {
                         >
                           Learn More
                         </Button>
-                        {project.link && (
+                        {project.liveUrl && (
                           <a
-                            href={project.link}
+                            href={project.liveUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Button variant="ghost" size="sm">
+                              Live Demo
+                            </Button>
+                          </a>
+                        )}
+                        {project.githubUrl && (
+                          <a
+                            href={project.githubUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}

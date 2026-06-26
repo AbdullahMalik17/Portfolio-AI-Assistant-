@@ -49,12 +49,13 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Malik | AI Agent Engineer",
     description: "I engineer lightweight, autonomous AI agents and enterprise digital employees.",
-    creator: "@Malik",
+    creator: "@Ab4695Athar",
     images: ["/og-image.png"],
   },
-  verification: {
-    google: "your-google-verification-code",
-  },
+  // TODO: Replace with real Google Search Console verification code
+  // verification: {
+  //   google: "your-google-verification-code",
+  // },
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,

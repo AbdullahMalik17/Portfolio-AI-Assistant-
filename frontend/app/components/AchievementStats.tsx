@@ -15,21 +15,21 @@ interface Stat {
 const stats: Stat[] = [
   {
     label: 'AI Projects',
-    value: 10,
+    value: 8,
     suffix: '+',
     icon: '🤖',
     description: 'Agentic AI systems built',
   },
   {
     label: 'Technologies',
-    value: 25,
+    value: 20,
     suffix: '+',
     icon: '💻',
     description: 'Tools & frameworks mastered',
   },
   {
     label: 'GitHub Repos',
-    value: 50,
+    value: 30,
     suffix: '+',
     icon: '📦',
     description: 'Open source contributions',

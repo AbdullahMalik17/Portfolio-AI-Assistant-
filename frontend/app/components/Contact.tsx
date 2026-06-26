@@ -5,6 +5,8 @@ import SocialLinks from './SocialLinks';
 import Button from './Button';
 import { FloatingInput, FloatingTextarea } from './FloatingInput';
 
+const CONTACT_BUTTON_TEXT = 'Send Message';
+
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -205,7 +207,7 @@ const Contact = () => {
                     ) : undefined
                   }
                 >
-                  Initiate Transmission
+                  {CONTACT_BUTTON_TEXT}
                 </Button>
               </div>
 

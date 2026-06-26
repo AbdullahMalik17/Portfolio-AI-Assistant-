@@ -22,31 +22,24 @@ export default function TypewriterEffect({
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
+    let timeout: NodeJS.Timeout;
     const currentWord = words[currentWordIndex];
 
-    const timeout = setTimeout(
-      () => {
-        if (!isDeleting) {
-          // Typing
-          if (currentText.length < currentWord.length) {
-            setCurrentText(currentWord.slice(0, currentText.length + 1));
-          } else {
-            // Word complete, wait then start deleting
-            setTimeout(() => setIsDeleting(true), delayBetweenWords);
-          }
-        } else {
-          // Deleting
-          if (currentText.length > 0) {
-            setCurrentText(currentText.slice(0, -1));
-          } else {
-            // Deletion complete, move to next word
-            setIsDeleting(false);
-            setCurrentWordIndex((prev) => (prev + 1) % words.length);
-          }
-        }
-      },
-      isDeleting ? deleteSpeed : typeSpeed
-    );
+    if (!isDeleting && currentText === currentWord) {
+      // Word is fully typed, wait before deleting
+      timeout = setTimeout(() => setIsDeleting(true), delayBetweenWords);
+    } else if (isDeleting && currentText === '') {
+      // Word is fully deleted, move to next word
+      setIsDeleting(false);
+      setCurrentWordIndex((prev) => (prev + 1) % words.length);
+    } else {
+      // Typing or Deleting
+      timeout = setTimeout(() => {
+        setCurrentText(
+          currentWord.slice(0, currentText.length + (isDeleting ? -1 : 1))
+        );
+      }, isDeleting ? deleteSpeed : typeSpeed);
+    }
 
     return () => clearTimeout(timeout);
   }, [

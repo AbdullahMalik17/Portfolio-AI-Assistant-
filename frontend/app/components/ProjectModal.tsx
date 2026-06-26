@@ -14,8 +14,8 @@ interface ProjectModalProps {
     longDescription?: string;
     image: string;
     tags: string[];
-    githubLink?: string;
-    liveLink?: string;
+    githubUrl?: string | null;
+    liveUrl?: string | null;
     features?: string[];
     challenges?: string[];
     technologies?: string[];
@@ -221,8 +221,8 @@ export default function ProjectModal({ isOpen, onClose, project, mcpMarketUrl }:
 
                     {/* Action Buttons */}
                     <div className="flex flex-wrap gap-3 pt-6 border-t border-[color:var(--card-border)]">
-                      {project.liveLink && (
-                        <a href={project.liveLink} target="_blank" rel="noopener noreferrer">
+                      {project.liveUrl && (
+                        <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
                           <Button
                             variant="primary"
                             size="md"
@@ -246,8 +246,8 @@ export default function ProjectModal({ isOpen, onClose, project, mcpMarketUrl }:
                           </Button>
                         </a>
                       )}
-                      {project.githubLink && (
-                        <a href={project.githubLink} target="_blank" rel="noopener noreferrer">
+                      {project.githubUrl && (
+                        <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
                           <Button
                             variant="outline"
                             size="md"

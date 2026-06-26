@@ -7,7 +7,8 @@ export interface PortfolioProject {
   title: string;
   description: string;
   tech: string[];
-  link?: string;
+  githubUrl?: string | null;
+  liveUrl?: string | null;
   category: string;
 }
 
@@ -34,7 +35,6 @@ export interface PersonalInfo {
   whatsapp: string;
   linkedin: string;
   github: string;
-  instagram: string;
   profession: string;
   tagline: string;
   specialty: string;
@@ -54,7 +54,6 @@ export const PERSONAL_INFO: PersonalInfo = {
   whatsapp: "+923040705172",
   linkedin: "https://www.linkedin.com/in/muhammad-abdullah-athar",
   github: "https://github.com/AbdullahMalik17",
-  instagram: "https://www.instagram.com/muhammadabdullah17337/",
   profession: "Full-Stack Developer & AI Specialist",
   tagline: "Building the Future of AI One Line at a Time",
   specialty: "Agentic AI Systems, Full-Stack Development, and Cloud Technologies"
@@ -66,7 +65,8 @@ export const PROJECTS: PortfolioProject[] = [
     title: "MalikClaw",
     description: "Ultra-lightweight, high-performance agentic AI assistant optimized for edge hardware ($10 Raspberry Pi/Android). Features Urdu-First support, mobile automation via ADB, and a privacy-first self-evolution engine. 99% more efficient than traditional AI gateways.",
     tech: ["Go", "React", "TypeScript", "ADB", "Model Context Protocol", "Docker"],
-    link: "https://malikclaw.vercel.app/",
+    githubUrl: "https://github.com/AbdullahMalik17/malikclaw",
+    liveUrl: "https://malikclaw.vercel.app/",
     category: "Agentic AI / Edge",
     mcpMarketUrl: "https://mcpmarket.com/ko/server/malikclaw",
   } as PortfolioProject & { mcpMarketUrl: string },
@@ -75,22 +75,17 @@ export const PROJECTS: PortfolioProject[] = [
     title: "AI Assistant Dashboard",
     description: "Intelligent portfolio dashboard with OpenAI integration featuring natural language processing, RAG-based knowledge retrieval, and automated task management. Handles 24/7 visitor inquiries with context-aware responses.",
     tech: ["Next.js", "OpenAI SDK", "Python", "Vercel Postgres", "Vector Store"],
-    link: "https://portfolio-ai-assistant-of-malik-five.vercel.app/",
+    githubUrl: "https://github.com/AbdullahMalik17/Portfolio-AI-Assistant",
+    liveUrl: "https://portfolio-ai-assistant-of-malik-five.vercel.app/",
     category: "AI/Web"
   },
   {
     title: "AI Code Assistant",
     description: "Multi-model agentic code assistant that helps developers write, debug, and optimize code. Features memory persistence, multi-turn conversations, and integration with industry-leading LLMs for superior code generation.",
     tech: ["OpenAI Agent SDK", "MEM0", "Python", "Chainlit", "Langfuse"],
-    link: "https://github.com/AbdullahMalik17/Agentic_AI/tree/main/_Projects/Code_Assistant_agent",
+    githubUrl: "https://github.com/AbdullahMalik17/Agentic_AI/tree/main/_Projects/Code_Assistant_agent",
+    liveUrl: null,
     category: "Agentic AI"
-  },
-  {
-    title: "Portfolio Website",
-    description: "Modern, responsive portfolio website featuring smooth scroll animations, framer-motion interactions, dark mode support, and an integrated AI chatbot. Built with performance and accessibility in mind.",
-    tech: ["Next.js 15", "TypeScript", "Tailwind CSS 4", "Framer Motion", "OpenAI"],
-    link: "https://github.com/AbdullahMalik17/Portfolio-AI-Assistant",
-    category: "Web Development"
   }
 ];
 

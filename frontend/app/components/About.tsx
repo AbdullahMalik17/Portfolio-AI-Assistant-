@@ -7,10 +7,10 @@ import SystemArchitecture from './SystemArchitecture';
 
 const About = () => {
   const stats = [
-    { number: 2, label: 'Years Experience', suffix: '+' },
-    { number: 15, label: 'Projects Completed', suffix: '+' },
-    { number: 10, label: 'Technologies Mastered', suffix: '+' },
-    { number: 247, label: 'AI Support Available', prefix: '', suffix: '' }, // Display as 247 for 24/7
+    { number: 2, label: 'Years Experience', suffix: '' },
+    { number: 8, label: 'Projects Completed', suffix: '' },
+    { number: 20, label: 'Technologies Mastered', suffix: '+' },
+    { number: 24/7, label: 'AI Support Available', prefix: '', suffix: '' }, // Display as 247 for 24/7
   ];
 
   const timelineEvents: TimelineEvent[] = [

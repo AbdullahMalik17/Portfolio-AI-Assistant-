@@ -47,11 +47,11 @@ const Hero = () => {
             <span className="text-[color:var(--accent)] font-semibold min-w-[120px] sm:min-w-[200px] inline-block" data-tech="Typewriter Hook">
               <TypewriterEffect
                 words={[
-                  'AI Development',
-                  'Full-Stack Development',
                   'Agentic AI Systems',
-                  'Cloud Technologies',
-                  'Web Applications',
+                  'Autonomous AI Agents',
+                  'Enterprise Digital Employees',
+                  'Edge AI Solutions',
+                  'Full-Stack AI Applications',
                 ]}
                 typeSpeed={100}
                 deleteSpeed={50}
