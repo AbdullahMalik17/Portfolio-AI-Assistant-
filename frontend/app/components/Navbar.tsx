@@ -17,10 +17,11 @@ const Navbar = () => {
 
   const navItems = [
     { name: 'Home', to: 'home' },
-    { name: 'About', to: 'about' },
-    { name: 'Skills', to: 'skills' },
+    { name: 'Featured Systems', to: 'projects' },
+    { name: 'Case Studies', to: 'case-studies' },
+    { name: 'Agentic Architecture', to: 'architecture' },
+    { name: 'Arsenal', to: 'skills' },
     { name: 'Certifications', to: 'certifications' },
-    { name: 'Projects', to: 'projects' },
     { name: 'Contact', to: 'contact' },
   ];
 
@@ -34,9 +35,19 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="text-2xl font-black text-shimmer hover:scale-110 transition-transform cursor-pointer tracking-tighter">
-            AI Portfolio
-          </div>
+          <Link
+            to="home"
+            smooth={true}
+            duration={500}
+            className="flex items-center gap-2 cursor-pointer group"
+          >
+            <span className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[color:var(--accent)] to-[color:var(--accent-secondary)] flex items-center justify-center font-mono font-bold text-white text-sm shadow-lg group-hover:scale-105 transition-transform">
+              AM
+            </span>
+            <span className="text-xl font-bold text-white tracking-tight group-hover:text-shimmer transition-all">
+              Abdullah Malik <span className="text-xs font-mono text-[color:var(--accent-tertiary)] font-normal ml-1">/ Agentic AI</span>
+            </span>
+          </Link>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-10 items-center">

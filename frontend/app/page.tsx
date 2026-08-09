@@ -1,33 +1,19 @@
 import dynamic from 'next/dynamic';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
+import ProofBar from './components/ProofBar';
 
-// Dynamic imports with SSR for important above-fold content
-const About = dynamic(() => import('./components/About'), {
-  ssr: true,
-});
+// Dynamic imports with SSR for structured narrative flow
+const Projects = dynamic(() => import('./components/Projects'), { ssr: true });
+const CaseStudies = dynamic(() => import('./components/CaseStudies'), { ssr: true });
+const SystemArchitecture = dynamic(() => import('./components/SystemArchitecture'), { ssr: true });
+const EngineeringCredibility = dynamic(() => import('./components/EngineeringCredibility'), { ssr: true });
+const Skills = dynamic(() => import('./components/Skills'), { ssr: true });
+const Certifications = dynamic(() => import('./components/Certifications'), { ssr: true });
+const About = dynamic(() => import('./components/About'), { ssr: true });
+const Contact = dynamic(() => import('./components/Contact'), { ssr: true });
 
-const Skills = dynamic(() => import('./components/Skills'), {
-  ssr: true,
-});
-
-const Certifications = dynamic(() => import('./components/Certifications'), {
-  ssr: true,
-});
-
-const AchievementStats = dynamic(() => import('./components/AchievementStats'), {
-  ssr: true,
-});
-
-const Projects = dynamic(() => import('./components/Projects'), {
-  ssr: true,
-});
-
-const Contact = dynamic(() => import('./components/Contact'), {
-  ssr: true,
-});
-
-// Dynamic imports for below-fold content (with loading states)
+// Dynamic imports for below-fold content
 const GitHubStats = dynamic(() => import('./components/GitHubStats'), {
   loading: () => (
     <section className="py-20 bg-[color:var(--background)]">
@@ -48,12 +34,7 @@ const GitHubStats = dynamic(() => import('./components/GitHubStats'), {
   ),
 });
 
-// Non-critical widgets - load asynchronously
 const WhatsAppWidget = dynamic(() => import('./components/WhatsAppWidget'), {
-  loading: () => null,
-});
-
-const ChatbotWidget = dynamic(() => import('./components/ChatbotWidget'), {
   loading: () => null,
 });
 
@@ -62,60 +43,70 @@ export default function Home() {
     <main className="min-h-screen">
       <Navbar />
       <Hero />
-      <About />
+      <ProofBar />
+      <Projects />
+      <CaseStudies />
+      <SystemArchitecture />
+      <EngineeringCredibility />
       <Skills />
       <Certifications />
-      <AchievementStats />
-      <Projects />
+      <About />
       <GitHubStats />
       <Contact />
-      
+
       {/* Footer */}
       <footer className="bg-[color:var(--background-secondary)] text-[color:var(--foreground)] py-12 border-t border-[color:var(--card-border)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             <div>
-              <h3 className="text-lg font-bold mb-4">Abdullah Malik</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Full-Stack Developer & AI Specialist building intelligent solutions
-                for the future.
+              <h3 className="text-lg font-bold mb-4 text-white">Abdullah Malik</h3>
+              <p className="text-sm text-gray-400 leading-relaxed">
+                Agentic AI Engineer specializing in Autonomous AI Agents, Multi-Agent Systems, MCP, and Digital FTEs.
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-bold mb-4">Quick Links</h3>
+              <h3 className="text-lg font-bold mb-4 text-white">Navigation</h3>
               <div className="space-y-2 text-sm">
-                <a href="#about" className="block text-gray-600 dark:text-gray-400 hover:text-[color:var(--accent)]">About</a>
-                <a href="#skills" className="block text-gray-600 dark:text-gray-400 hover:text-[color:var(--accent)]">Skills</a>
-                <a href="#certifications" className="block text-gray-600 dark:text-gray-400 hover:text-[color:var(--accent)]">Certifications</a>
-                <a href="#projects" className="block text-gray-600 dark:text-gray-400 hover:text-[color:var(--accent)]">Projects</a>
-                <a href="#contact" className="block text-gray-600 dark:text-gray-400 hover:text-[color:var(--accent)]">Contact</a>
+                <a href="#home" className="block text-gray-400 hover:text-[color:var(--accent)] transition-colors">Home</a>
+                <a href="#projects" className="block text-gray-400 hover:text-[color:var(--accent)] transition-colors">Featured Systems</a>
+                <a href="#case-studies" className="block text-gray-400 hover:text-[color:var(--accent)] transition-colors">Case Studies</a>
+                <a href="#architecture" className="block text-gray-400 hover:text-[color:var(--accent)] transition-colors">Agentic Architecture</a>
+                <a href="#skills" className="block text-gray-400 hover:text-[color:var(--accent)] transition-colors">Technical Arsenal</a>
+                <a href="#certifications" className="block text-gray-400 hover:text-[color:var(--accent)] transition-colors">Certifications</a>
+                <a href="#contact" className="block text-gray-400 hover:text-[color:var(--accent)] transition-colors">Contact</a>
               </div>
             </div>
             <div>
-              <h3 className="text-lg font-bold mb-4">Connect</h3>
+              <h3 className="text-lg font-bold mb-4 text-white">Connect & Direct Links</h3>
               <div className="space-y-2 text-sm">
-                <a href="https://github.com/AbdullahMalik17" target="_blank" rel="noopener noreferrer" className="block text-gray-600 dark:text-gray-400 hover:text-[color:var(--accent)]">
-                  GitHub
+                <a href="https://github.com/AbdullahMalik17" target="_blank" rel="noopener noreferrer" className="block text-gray-400 hover:text-[color:var(--accent)] transition-colors">
+                  GitHub Profile
                 </a>
-                <a href="https://www.linkedin.com/in/muhammad-abdullah-athar" target="_blank" rel="noopener noreferrer" className="block text-gray-600 dark:text-gray-400 hover:text-[color:var(--accent)]">
+                <a href="https://www.linkedin.com/in/muhammad-abdullah-athar" target="_blank" rel="noopener noreferrer" className="block text-gray-400 hover:text-[color:var(--accent)] transition-colors">
                   LinkedIn
                 </a>
-                <a href="mailto:muhammadabdullah51700@gmail.com" className="block text-gray-600 dark:text-gray-400 hover:text-[color:var(--accent)]">
-                  Email
+                <a href="https://mcpmarket.com/ko/server/malikclaw" target="_blank" rel="noopener noreferrer" className="block text-gray-400 hover:text-[color:var(--accent)] transition-colors">
+                  MalikClaw on MCP Market
+                </a>
+                <a href="https://a2as.org/certified/agents/abdullahmalik17/deep-research-age" target="_blank" rel="noopener noreferrer" className="block text-gray-400 hover:text-[color:var(--accent)] transition-colors">
+                  A2AS Behavior Certificate
+                </a>
+                <a href="mailto:muhammadabdullah51700@gmail.com" className="block text-gray-400 hover:text-[color:var(--accent)] transition-colors">
+                  Email Abdullah
                 </a>
               </div>
             </div>
           </div>
           <div className="text-center pt-8 border-t border-[color:var(--card-border)]">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              © 2026 Abdullah Malik. Built with Next.js 15, TypeScript, and OpenAI.
+            <p className="text-xs text-gray-400 font-mono">
+              © 2026 Abdullah Malik. Built with Next.js 15, TypeScript, Go & Model Context Protocol.
             </p>
           </div>
         </div>
       </footer>
+
       {/* Floating Widgets */}
       <WhatsAppWidget />
-      <ChatbotWidget />
-      </main>
+    </main>
   );
 }

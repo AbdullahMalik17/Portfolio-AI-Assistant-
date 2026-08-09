@@ -4,25 +4,10 @@ import { motion } from 'framer-motion';
 import FadeInWhenVisible from './FadeInWhenVisible';
 import SkillsCloud from './SkillsCloud';
 
+import { SKILLS } from '../lib/portfolio-data';
+
 const Skills = () => {
-  const skillCategories = [
-    {
-      title: 'Frontend',
-      skills: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'HTML5/CSS3'],
-    },
-    {
-      title: 'Backend',
-      skills: ['Python', 'Node.js', 'FastAPI', 'JavaScript', 'Supabase'],
-    },
-    {
-      title: 'AI & ML',
-      skills: ['OpenAI Agent Sdk', 'Langfuse', 'N8N', 'Google Framework', 'OpenAI Agent Kit', 'AI Driven Development'],
-    },
-    {
-      title: 'Tools',
-      skills: ['Git', 'Docker', 'VS Code', 'Cursor', 'Claude Code', 'Gemini CLI', 'Qwen', 'Figma', 'AntiGravity', 'Spec'],
-    },
-  ];
+  const skillCategories = SKILLS;
 
   // Flatten skills for the cloud
   const allSkills = skillCategories.flatMap(cat => cat.skills);

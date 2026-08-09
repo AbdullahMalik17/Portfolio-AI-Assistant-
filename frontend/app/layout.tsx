@@ -20,47 +20,43 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://portfolio-ai-assistant-of-malik.vercel.app'),
-  title: "Malik | AI Agent Engineer",
-  description: "I engineer lightweight, autonomous AI agents and enterprise digital employees.",
-  keywords: ["AI Engineer", "Next.js 15", "TypeScript", "LLM", "Agentic Systems"],
-  authors: [{ name: "Malik", url: "https://portfolio-ai-assistant-of-malik.vercel.app/" }],
-  creator: "Malik",
-  publisher: "Malik",
+  title: "Abdullah Malik — Agentic AI Engineer",
+  description: "I build autonomous AI systems, Digital FTEs, MCP-powered tools, and production-ready agentic workflows.",
+  keywords: ["Abdullah Malik", "Agentic AI Engineer", "Autonomous AI Agents", "Multi-Agent Systems", "Model Context Protocol", "MCP", "Digital FTE", "Go", "Python", "TypeScript", "Next.js"],
+  authors: [{ name: "Abdullah Malik", url: "https://portfolio-ai-assistant-of-malik.vercel.app/" }],
+  creator: "Abdullah Malik",
+  publisher: "Abdullah Malik",
   robots: {
     index: true,
     follow: true,
   },
   openGraph: {
-    title: "Malik | AI Agent Engineer",
-    description: "I engineer lightweight, autonomous AI agents and enterprise digital employees.",
+    title: "Abdullah Malik — Agentic AI Engineer",
+    description: "I build autonomous AI systems, Digital FTEs, MCP-powered tools, and production-ready agentic workflows.",
     url: "https://portfolio-ai-assistant-of-malik.vercel.app/",
-    siteName: "Malik AI Portfolio",
+    siteName: "Abdullah Malik — Agentic AI Portfolio",
     type: "website",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Malik | AI Agent Engineer",
+        alt: "Abdullah Malik — Agentic AI Engineer",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Malik | AI Agent Engineer",
-    description: "I engineer lightweight, autonomous AI agents and enterprise digital employees.",
+    title: "Abdullah Malik — Agentic AI Engineer",
+    description: "I build autonomous AI systems, Digital FTEs, MCP-powered tools, and production-ready agentic workflows.",
     creator: "@Ab4695Athar",
     images: ["/og-image.png"],
   },
-  // TODO: Replace with real Google Search Console verification code
-  // verification: {
-  //   google: "your-google-verification-code",
-  // },
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Malik Portfolio",
+    title: "Abdullah Malik Portfolio",
   },
   formatDetection: {
     telephone: false,
@@ -85,10 +81,24 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
-    "name": "Malik",
+    "name": "Abdullah Malik",
     "url": "https://portfolio-ai-assistant-of-malik.vercel.app/",
-    "jobTitle": "AI Agent Engineer",
-    "knowsAbout": ["Next.js", "TypeScript", "AI Agents", "LLM Integration", "Autonomous Systems"],
+    "jobTitle": "Agentic AI Engineer",
+    "sameAs": [
+      "https://github.com/AbdullahMalik17",
+      "https://www.linkedin.com/in/muhammad-abdullah-athar"
+    ],
+    "knowsAbout": [
+      "Agentic AI Systems",
+      "Autonomous Agents",
+      "Model Context Protocol (MCP)",
+      "Digital FTEs",
+      "Go",
+      "Python",
+      "TypeScript",
+      "Next.js",
+      "Docker"
+    ],
     "mainEntityOfPage": {
       "@type": "WebSite",
       "@id": "https://portfolio-ai-assistant-of-malik.vercel.app/"

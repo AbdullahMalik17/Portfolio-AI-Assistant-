@@ -122,12 +122,15 @@ const Contact = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
-            Get In <span className="text-shimmer">Touch</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[color:var(--accent-secondary)]/10 border border-[color:var(--accent-secondary)]/30 text-[color:var(--accent-secondary)] text-xs font-mono font-bold uppercase tracking-wider mb-4">
+            Initiate Collaboration
+          </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 tracking-tight">
+            Have an AI workflow <br className="hidden sm:block" />
+            <span className="text-shimmer">worth automating?</span>
           </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-[color:var(--accent)] to-[color:var(--accent-secondary)] mx-auto rounded-full"></div>
-          <p className="mt-8 text-base sm:text-lg text-gray-400 max-w-2xl mx-auto">
-            Have a project in mind? Let&apos;s discuss how we can build something extraordinary together.
+          <p className="mt-4 text-base sm:text-xl text-gray-300 max-w-2xl mx-auto font-semibold">
+            Let&apos;s build it together.
           </p>
         </div>
 

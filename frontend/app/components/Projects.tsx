@@ -1,646 +1,313 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import FadeInWhenVisible from './FadeInWhenVisible';
 import ProjectModal from './ProjectModal';
 import Button from './Button';
 import ProjectCard3D from './ProjectCard3D';
-
-// Extend list type to carry optional extra links per project
-type ProjectExtra = {
-  mcpMarketUrl?: string;
-  certificateUrl?: string;
-};
+import { PROJECTS, PortfolioProject } from '../lib/portfolio-data';
 
 const Projects = () => {
-  const [selectedProject, setSelectedProject] = useState<number | null>(null);
+  const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTechs, setSelectedTechs] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [sortBy, setSortBy] = useState<'recent' | 'alphabetical'>('recent');
 
-  const projects: ({
-    title: string;
-    description: string;
-    longDescription: string;
-    tech: string[];
-    image: string;
-    githubUrl?: string | null;
-    liveUrl?: string | null;
-    features: string[];
-    technologies: string[];
-    challenges: string[];
-    results: string[];
-  } & ProjectExtra)[] = useMemo(() => [
-    {
-      title: 'MalikClaw',
-      description: 'Ultra-lightweight, high-performance agentic AI assistant optimized for edge hardware ($10 Raspberry Pi/Android) with Urdu-First support.',
-      longDescription: 'MalikClaw is a revolutionary personal AI assistant designed to bring advanced agentic capabilities to low-resource edge hardware. Built with Go for maximum performance, it features a privacy-first architecture, Urdu-First bilingual support, and mobile automation capabilities via ADB. It is 99% more efficient than traditional AI gateways, operating on less than 10MB of RAM. MalikClaw is officially listed on MCP Market and holds an A2AS Behavior Certificate for AI Agent Security & Governance.',
-      tech: ['Go', 'React', 'TypeScript', 'ADB', 'MCP'],
-      image: '🦅',
-      githubUrl: 'https://github.com/AbdullahMalik17/malikclaw',
-      liveUrl: 'https://malikclaw.vercel.app/',
-      mcpMarketUrl: 'https://mcpmarket.com/ko/server/malikclaw',
-      certificateUrl: '/Muhammad_Abdullah_Certificate.pdf',
-      features: [
-        'Edge-Optimized Performance (<10MB RAM, <1s boot time)',
-        'Urdu-First Ecosystem with bilingual onboarding and RTL support',
-        'Mobile Automation via ADB (screenshots, taps, types, swipes)',
-        'Model Context Protocol (MCP) integration for Gmail and Odoo',
-        'Self-Evolution Engine for autonomous code improvement',
-        'Automated Heartbeat tasks and multi-channel support (10+ channels)',
-        'Listed on MCP Market — globally discoverable as an MCP server',
-      ],
-      technologies: ['Go (Golang)', 'React', 'TypeScript', 'ADB', 'Docker', 'MCP', 'Shell Scripting'],
-      challenges: [
-        'Optimized AI agent logic for extremely low-resource environments (ARM/RISC-V)',
-        'Implemented native RTL support and Urdu-centric workflows for South Asian accessibility',
-        'Developed secure sandbox for autonomous file and command execution on edge devices',
-      ],
-      results: [
-        'Achieved 99% reduction in memory footprint compared to traditional AI gateways',
-        'Successfully deployed on $10 hardware (Raspberry Pi Zero) with full agentic capabilities',
-        'Built a unique "Urdu-First" AI entry point for the regional developer ecosystem',
-        'Officially listed on MCP Market as a globally discoverable AI agent server',
-      ],
-    },
-    {
-      title: 'Digital FTE - Abdullah Junior',
-      description: 'High-autonomy AI agent system acting as a Digital Employee that manages personal and business affairs 24/7 with self-evolving capabilities.',
-      longDescription: 'Abdullah Junior is an elite Digital Full-Time Equivalent (FTE) - a comprehensive AI agent system designed to act as your personal and business autopilot. Features a dual-agent architecture with Cloud Agent (Sentry) for continuous monitoring and Local Agent (Executive) for secure task execution, orchestrated by an intelligent Brain system.',
-      tech: ['Python', 'FastAPI', 'Gemini AI', 'Claude AI', 'MCP Servers'],
-      image: '🤖',
-      githubUrl: 'https://github.com/AbdullahMalik17/Digital-FTE',
-      liveUrl: null,
-      features: [
-        '24/7 automated monitoring of Gmail, WhatsApp, LinkedIn, and Social Media',
-        'Dual-Agent Architecture: Cloud Sentry (read-only) + Local Executive (full access)',
-        'Intelligent Orchestrator Brain for task classification and AI model selection',
-        'Self-Evolution Engine with autonomous debugging and skill acquisition',
-        'Financial management via Odoo integration (invoicing, expense tracking)',
-        'Knowledge management with Git-synced Obsidian Vault',
-      ],
-      technologies: ['Python', 'FastAPI', 'Google Gemini 1.5 Pro', 'Claude 3.5', 'MCP Servers', 'Docker', 'Fly.io', 'Kubernetes'],
-      challenges: [
-        'Designed dual-agent security model separating cloud monitoring from local execution',
-        'Implemented MCP servers for Gmail, WhatsApp, LinkedIn, Odoo, and Social Media integrations',
-        'Built self-evolving system with comprehensive audit logging and testing protocols',
-      ],
-      results: [
-        'Created autonomous digital employee capable of 24/7 task management',
-        'Achieved secure multi-channel communication across 6+ platforms',
-        'Built for 2026 AI Employee Hackathon with production-ready architecture',
-      ],
-    },
-    {
-      title: 'Customer Success Digital FTE',
-      description: 'AI-powered customer support agent handling inquiries 24/7 across Email, WhatsApp, and Web channels with intelligent escalation.',
-      longDescription: 'Complete AI-powered customer support system that autonomously handles customer inquiries across multiple channels. Features semantic search with pgvector, intelligent escalation detection, and comprehensive ticket management with 100% completion of all 9 development phases.',
-      tech: ['Python', 'FastAPI', 'OpenAI GPT-4', 'PostgreSQL', 'Kafka'],
-      image: '💬',
-      githubUrl: 'https://github.com/AbdullahMalik17/Hacathan_5',
-      liveUrl: null,
-      features: [
-        'Multi-channel support: Email (Gmail), WhatsApp (Twilio), Web Forms',
-        '5 AI function tools: create_ticket, get_customer_history, search_knowledge_base, send_email, escalate',
-        'Semantic search with pgvector (1536-dim embeddings) for intelligent responses',
-        'Sentiment analysis and intelligent escalation detection',
-        'Async message processing with Kafka and dead letter queue',
-        'Cross-channel customer identity management',
-      ],
-      technologies: ['Python', 'FastAPI', 'OpenAI GPT-4 Turbo', 'PostgreSQL + pgvector', 'Apache Kafka', 'Docker', 'Kubernetes'],
-      challenges: [
-        'Built semantic search system with pgvector for accurate knowledge base queries',
-        'Implemented async message processing with Kafka, deduplication, and retry logic',
-        'Designed escalation detection for pricing, refund, legal, and sentiment triggers',
-      ],
-      results: [
-        'Completed all 9 development phases (117/117 tasks - 100%)',
-        'Production-ready deployment on Docker/Kubernetes with cloud support (GKE/EKS/AKS)',
-        'Comprehensive monitoring with Prometheus, Grafana, and structured logging',
-      ],
-    },
-    {
-      title: 'Physical AI Platform',
-      description: 'Interactive platform teaching Physical AI & Humanoid Robotics with a RAG chatbot and 43+ runnable code examples.',
-      longDescription: 'Comprehensive educational platform designed to make Physical AI and Humanoid Robotics accessible to everyone. Features an intelligent RAG-powered chatbot that answers questions about robotics, embodied AI, and related concepts using vector search across curated educational content.',
-      tech: ['Docusaurus', 'React', 'OpenAI', 'Pinecone', 'Tailwind'],
-      image: '📘',
-      githubUrl: 'https://github.com/AbdullahMalik17/Physical_AI',
-      liveUrl: null,
-      features: [
-        '43+ interactive, runnable code examples with live execution',
-        'RAG-powered chatbot with semantic search across educational content',
-        'Vector database integration using Pinecone for intelligent Q&A',
-        'Comprehensive documentation covering embodied AI fundamentals',
-        'Interactive tutorials with step-by-step explanations',
-      ],
-      technologies: ['Docusaurus', 'React', 'OpenAI GPT-4', 'Pinecone Vector DB', 'Tailwind CSS', 'Python'],
-      challenges: [
-        'Built semantic search system to retrieve relevant robotics content from 100+ documents',
-        'Implemented code sandbox for safe execution of robotics simulation code',
-        'Optimized vector embeddings for accurate context retrieval',
-      ],
-      results: [
-        'Created comprehensive learning resource for Physical AI enthusiasts',
-        'Achieved high accuracy in chatbot responses using RAG architecture',
-        'Successfully deployed with positive feedback from robotics community',
-      ],
-    },
-    {
-      title: 'Voice Assistant Agent',
-      description: 'Privacy-first voice assistant with wake word detection, semantic memory, and autonomous system control capabilities.',
-      longDescription: 'Advanced voice-activated AI assistant that prioritizes user privacy while providing intelligent, context-aware responses. Features custom wake word detection, semantic memory for personalized interactions, and the ability to control system functions through natural voice commands.',
-      tech: ['Python', 'Gemini API', 'Whisper', 'ChromaDB', 'Picovoice'],
-      image: '🎙️',
-      githubUrl: 'https://github.com/AbdullahMalik17/Voice-Assistant17',
-      liveUrl: null,
-      features: [
-        'Custom wake word detection using Picovoice for hands-free activation',
-        'Semantic memory system to remember user preferences and context',
-        'System control capabilities (open apps, adjust settings, etc.)',
-        'Offline speech recognition with OpenAI Whisper',
-        'Natural conversation flow with Gemini API integration',
-      ],
-      technologies: ['Python', 'Google Gemini API', 'OpenAI Whisper', 'ChromaDB', 'Picovoice', 'PyAudio'],
-      challenges: [
-        'Implemented semantic memory using ChromaDB for context retention across sessions',
-        'Optimized wake word detection for low false-positive rate',
-        'Balanced local processing with cloud AI for privacy and performance',
-      ],
-      results: [
-        'Achieved 95%+ accuracy in wake word detection',
-        'Successfully implemented privacy-first architecture with local processing',
-        'Created seamless voice interaction experience with minimal latency',
-      ],
-    },
-    {
-      title: 'AI Assistant Dashboard',
-      description: 'Intelligent dashboard with OpenAI integration for natural language processing and task automation.',
-      longDescription: 'Full-stack AI-powered portfolio dashboard that serves as an intelligent interface for visitor interactions. Integrates OpenAI Assistants API with RAG capabilities to answer questions about projects, skills, and experience using natural language.',
-      tech: ['Next.js', 'OpenAI SDK', 'Python'],
-      image: '🤖',
-      githubUrl: 'https://github.com/AbdullahMalik17/Portfolio-AI-Assistant',
-      liveUrl: 'https://portfolio-ai-assistant-of-malik-five.vercel.app/',
-      features: [
-        'AI chatbot with RAG for answering portfolio-related queries',
-        'OpenAI Vector Store for semantic search across portfolio content',
-        'Contact form with database storage and admin dashboard',
-        'Real-time GitHub stats integration',
-        'Progressive Web App (PWA) with offline support',
-      ],
-      technologies: ['Next.js 15', 'TypeScript', 'OpenAI Assistants API', 'Vercel Postgres', 'Tailwind CSS', 'Framer Motion'],
-      challenges: [
-        'Implemented RAG system using OpenAI Vector Store for accurate information retrieval',
-        'Built admin dashboard for managing contact submissions',
-        'Optimized performance for fast page loads and smooth animations',
-      ],
-      results: [
-        '24/7 automated visitor support with AI-powered responses',
-        'Reduced response time for common inquiries by 90%',
-        'Enhanced user engagement with interactive AI features',
-      ],
-    },
-    {
-      title: 'AI Code Assistant',
-      description: 'Multi AI Model code assistant that helps developers write, debug, and optimize code snippets.',
-      longDescription: 'Intelligent coding assistant powered by OpenAI Agent SDK that helps developers with code generation, debugging, optimization, and learning. Features long-term memory, conversation tracking, and multi-step reasoning for complex coding tasks.',
-      tech: ['OpenAI Agent SDK', 'MEM0', 'Python', 'Chainlit', 'Langfuse'],
-      image: '💻',
-      githubUrl: 'https://github.com/AbdullahMalik17/Agentic_AI/tree/main/_Projects/Code_Assistant_agent',
-      liveUrl: null,
-      features: [
-        'Multi-step code generation with reasoning traces',
-        'Intelligent code debugging and error explanation',
-        'Code optimization suggestions with performance insights',
-        'Long-term memory using MEM0 for personalized assistance',
-        'Conversation tracking with Langfuse for quality monitoring',
-      ],
-      technologies: ['OpenAI Agent SDK', 'MEM0', 'Python', 'Chainlit', 'Langfuse', 'PostgreSQL'],
-      challenges: [
-        'Implemented agent-based architecture with tool use and function calling',
-        'Integrated MEM0 for persistent memory across sessions',
-        'Built comprehensive logging and monitoring with Langfuse',
-      ],
-      results: [
-        'Reduced code debugging time by providing instant error analysis',
-        'Improved code quality with intelligent optimization suggestions',
-        'Created personalized learning experience with memory retention',
-      ],
-    },
-  ], []);
+  const categories = ['All', 'Agentic AI', 'Web Development', 'Education'];
 
-  // Extract all unique technologies
-  const allTechnologies = useMemo(() => {
-    const techSet = new Set<string>();
-    projects.forEach(project => {
-      project.tech.forEach(tech => techSet.add(tech));
-    });
-    return Array.from(techSet).sort();
-  }, [projects]);
-
-  // Define categories
-  const categories = [
-    'All',
-    'AI Agents',
-    'Web Development',
-    'Education',
-  ];
-
-  // Category mapping
-  const getCategoryForProject = useCallback((project: typeof projects[0]) => {
-    const title = project.title.toLowerCase();
-    const desc = project.description.toLowerCase();
-
-    if (title.includes('fte') || title.includes('assistant') || title.includes('voice') || desc.includes('agent')) {
-      return 'AI Agents';
-    }
-    if (title.includes('platform') || title.includes('physical ai')) {
-      return 'Education';
-    }
-    return 'Web Development';
+  const featuredProjects = useMemo(() => {
+    return PROJECTS.filter((p) => p.featured);
   }, []);
 
-  // Filter and sort projects
-  const filteredAndSortedProjects = useMemo(() => {
-    let filtered = projects.filter(project => {
-      // Search filter
-      const matchesSearch = searchQuery === '' ||
-        project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.tech.some(tech => tech.toLowerCase().includes(searchQuery.toLowerCase()));
+  const otherProjects = useMemo(() => {
+    return PROJECTS.filter((p) => !p.featured);
+  }, []);
 
-      // Category filter
-      const matchesCategory = selectedCategory === 'All' ||
-        getCategoryForProject(project) === selectedCategory;
+  const filteredOtherProjects = useMemo(() => {
+    return otherProjects.filter((p) => {
+      const matchesSearch =
+        searchQuery === '' ||
+        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.tech.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
 
-      // Tech filter
-      const matchesTech = selectedTechs.length === 0 ||
-        selectedTechs.every(tech => project.tech.includes(tech));
+      const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory;
 
-      return matchesSearch && matchesCategory && matchesTech;
+      return matchesSearch && matchesCategory;
     });
-
-    // Sort
-    if (sortBy === 'alphabetical') {
-      filtered = filtered.sort((a, b) => a.title.localeCompare(b.title));
-    }
-    // 'recent' keeps the original order
-
-    return filtered;
-  }, [projects, searchQuery, selectedCategory, selectedTechs, sortBy, getCategoryForProject]);
-
-  // Toggle tech filter
-  const toggleTech = (tech: string) => {
-    setSelectedTechs(prev =>
-      prev.includes(tech)
-        ? prev.filter(t => t !== tech)
-        : [...prev, tech]
-    );
-  };
-
-  // Clear all filters
-  const clearFilters = () => {
-    setSearchQuery('');
-    setSelectedTechs([]);
-    setSelectedCategory('All');
-    setSortBy('recent');
-  };
-
-  const hasActiveFilters = searchQuery !== '' || selectedTechs.length > 0 || selectedCategory !== 'All' || sortBy !== 'recent';
-
-  const containerVariants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: 0.15,
-      },
-    },
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0 },
-  };
+  }, [otherProjects, searchQuery, selectedCategory]);
 
   return (
-    <section 
-      id="projects" 
-      className="py-20 relative"
-      data-component="Projects Section"
-      data-type="Client Component"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="projects" className="py-24 relative overflow-hidden bg-[color:var(--background)]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <FadeInWhenVisible>
-          <div className="text-center mb-12 sm:mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[color:var(--foreground)] mb-4">
-              Featured Projects
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[color:var(--accent)]/10 border border-[color:var(--accent)]/30 text-[color:var(--accent)] text-xs font-mono font-bold uppercase tracking-wider mb-4">
+              Autonomous Systems & Engineering Portfolio
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
+              Featured <span className="text-shimmer">Agentic Systems</span>
             </h2>
-            <p className="mt-6 text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              A selection of projects showcasing my work in AI and web development
+            <p className="mt-4 text-base sm:text-lg text-gray-400 max-w-3xl mx-auto">
+              Production-ready autonomous AI agents, multi-agent frameworks, and edge-native gateways engineered with Go, Python, and Model Context Protocol.
             </p>
           </div>
         </FadeInWhenVisible>
 
-        {/* Filter Controls */}
-        <div className="mb-12 space-y-6">
-          {/* Search and Sort */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            {/* Search Input */}
-            <div className="flex-1 relative">
-              <svg
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+        {/* SECTION 1: FEATURED SYSTEMS (FLAGSHIP 3) */}
+        <div className="mb-20 space-y-10">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {featuredProjects.map((project) => (
+              <motion.div
+                key={project.title}
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4 }}
+                className="h-full flex flex-col"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search projects..."
-                className="w-full pl-12 pr-4 py-3 rounded-lg bg-[color:var(--background-secondary)] border border-[color:var(--foreground)]/10 focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20 outline-none transition-all text-[color:var(--foreground)]"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[color:var(--foreground)] transition-colors"
+                <ProjectCard3D
+                  className="group glass glow-card rounded-3xl p-8 flex flex-col h-full bg-[color:var(--background-secondary)]/50 backdrop-blur-2xl flagship-pulse hover:border-[color:var(--accent)]/50 transition-all duration-500 justify-between border border-white/10"
+                  glareColor="rgba(99, 102, 241, 0.25)"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              )}
-            </div>
+                  <div>
+                    {/* Top Header Row */}
+                    <div className="flex items-start justify-between mb-6">
+                      <div className="text-5xl transform group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500">
+                        {project.image}
+                      </div>
+                      <span className="px-3 py-1 rounded-full bg-[color:var(--accent)]/15 border border-[color:var(--accent)]/30 text-[color:var(--accent-tertiary)] text-[10px] font-mono font-extrabold uppercase tracking-wider">
+                        FLAGSHIP SYSTEM
+                      </span>
+                    </div>
 
-            {/* Sort Dropdown */}
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'recent' | 'alphabetical')}
-              className="px-4 py-3 rounded-lg bg-[color:var(--background-secondary)] border border-[color:var(--foreground)]/10 focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20 outline-none transition-all text-[color:var(--foreground)] min-w-[160px]"
-            >
-              <option value="recent">Most Recent</option>
-              <option value="alphabetical">Alphabetical</option>
-            </select>
-          </div>
+                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-shimmer transition-all">
+                      {project.title}
+                    </h3>
+                    <p className="text-xs text-gray-300 mb-6 leading-relaxed">
+                      {project.description}
+                    </p>
 
-          {/* Category Filter */}
-          <div className="flex flex-wrap gap-3">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  selectedCategory === category
-                    ? 'bg-gradient-button text-gray-900'
-                    : 'bg-[color:var(--background-secondary)] text-[color:var(--foreground)] border border-[color:var(--foreground)]/10 hover:border-[color:var(--accent)]/30'
-                }`}
-              >
-                {category}
-              </button>
+                    {/* Problem & Solution Mini Cards */}
+                    {project.problem && (
+                      <div className="space-y-3 mb-6">
+                        <div className="p-3.5 rounded-2xl bg-black/40 border border-white/5 space-y-1">
+                          <span className="text-[10px] font-mono text-[color:var(--accent-secondary)] uppercase font-bold tracking-widest block">
+                            Problem
+                          </span>
+                          <p className="text-[11px] text-gray-400 leading-normal">
+                            {project.problem}
+                          </p>
+                        </div>
+                        <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/5 space-y-1">
+                          <span className="text-[10px] font-mono text-[color:var(--neon-cyan)] uppercase font-bold tracking-widest block">
+                            Solution
+                          </span>
+                          <p className="text-[11px] text-gray-300 leading-normal">
+                            {project.solution}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    {/* Tech Stack Pills */}
+                    <div className="flex flex-wrap gap-1.5 mb-6">
+                      {project.tech.map((t, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2.5 py-1 bg-[color:var(--accent)]/10 text-[color:var(--accent)] rounded-lg text-[10px] font-mono font-semibold border border-[color:var(--accent)]/20"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* CTA Buttons */}
+                    <div className="flex flex-wrap gap-2.5 pt-2 border-t border-white/5">
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() => setSelectedProject(project)}
+                      >
+                        Learn More
+                      </Button>
+                      {project.liveUrl && (
+                        <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
+                          <Button variant="ghost" size="sm">
+                            Live Demo
+                          </Button>
+                        </a>
+                      )}
+                      {project.githubUrl && (
+                        <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
+                          <Button variant="ghost" size="sm">
+                            GitHub
+                          </Button>
+                        </a>
+                      )}
+                    </div>
+
+                    {/* Extra Badges (MCP Market / Certificate) */}
+                    {(project.mcpMarketUrl || project.certificateUrl) && (
+                      <div className="pt-3 mt-3 border-t border-white/5 flex flex-col gap-2">
+                        {project.mcpMarketUrl && (
+                          <a
+                            href={project.mcpMarketUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-purple-500/10 border border-purple-500/25 text-purple-300 text-[11px] font-mono font-semibold hover:bg-purple-500/20 transition-all"
+                          >
+                            <span className="w-2 h-2 rounded-full bg-purple-400 animate-ping"></span>
+                            Listed on MCP Market
+                          </a>
+                        )}
+                        {project.certificateUrl && (
+                          <a
+                            href={project.certificateUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 text-[11px] font-mono font-semibold hover:bg-emerald-500/20 transition-all"
+                          >
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            Verified A2AS / Panaversity Certificate
+                          </a>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </ProjectCard3D>
+              </motion.div>
             ))}
           </div>
+        </div>
 
-          {/* Technology Filter */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Filter by Technology:
-              </span>
-              {selectedTechs.length > 0 && (
-                <button
-                  onClick={() => setSelectedTechs([])}
-                  className="text-xs text-[color:var(--accent)] hover:underline"
-                >
-                  Clear ({selectedTechs.length})
-                </button>
-              )}
+        {/* SECTION 2: OTHER PROJECTS HEADER & FILTERS */}
+        <div className="pt-12 border-t border-white/10">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div>
+              <h3 className="text-2xl font-bold text-white tracking-tight">
+                Other Engineering & AI Projects
+              </h3>
+              <p className="text-sm text-gray-400">
+                Additional specialized agents, tools, and developer platforms
+              </p>
             </div>
+
+            {/* Filter Pills */}
             <div className="flex flex-wrap gap-2">
-              {allTechnologies.map((tech) => (
+              {categories.map((cat) => (
                 <button
-                  key={tech}
-                  onClick={() => toggleTech(tech)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                    selectedTechs.includes(tech)
-                      ? 'bg-[color:var(--accent)] text-white'
-                      : 'bg-[color:var(--accent)]/10 text-[color:var(--accent)] border border-[color:var(--accent)]/20 hover:bg-[color:var(--accent)]/20'
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                    selectedCategory === cat
+                      ? 'bg-[color:var(--accent)] text-white shadow-md'
+                      : 'bg-white/5 text-gray-400 hover:text-white border border-white/5'
                   }`}
                 >
-                  {tech}
+                  {cat}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Results Info and Clear Filters */}
-          <div className="flex items-center justify-between pt-4 border-t border-[color:var(--foreground)]/10">
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              Showing {filteredAndSortedProjects.length} of {projects.length} projects
-            </span>
-            {hasActiveFilters && (
-              <button
-                onClick={clearFilters}
-                className="text-sm text-[color:var(--accent)] hover:underline font-medium"
+          {/* Search Bar */}
+          <div className="mb-8 relative max-w-md">
+            <svg
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by technology or keyword..."
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-black/40 border border-white/10 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[color:var(--accent)] transition-all font-mono"
+            />
+          </div>
+
+          {/* Other Projects Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredOtherProjects.map((project) => (
+              <motion.div
+                key={project.title}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="glass p-6 rounded-2xl border border-white/10 hover:border-white/20 bg-white/[0.02] flex flex-col justify-between"
               >
-                Clear all filters
-              </button>
-            )}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-3xl">{project.image || '🤖'}</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/5 text-gray-400 border border-white/5">
+                      {project.category}
+                    </span>
+                  </div>
+                  <h4 className="text-lg font-bold text-white mb-2">
+                    {project.title}
+                  </h4>
+                  <p className="text-xs text-gray-400 mb-4 leading-relaxed line-clamp-3">
+                    {project.description}
+                  </p>
+                </div>
+
+                <div>
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {project.tech.map((t, idx) => (
+                      <span key={idx} className="px-2 py-0.5 rounded bg-white/5 text-[10px] font-mono text-gray-300">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button variant="primary" size="sm" onClick={() => setSelectedProject(project)}>
+                      Details
+                    </Button>
+                    {project.githubUrl && (
+                      <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
+                        <Button variant="ghost" size="sm">
+                          Code
+                        </Button>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
 
-        <AnimatePresence mode="wait">
-          {filteredAndSortedProjects.length === 0 ? (
-            <motion.div
-              key="no-results"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="text-center py-20"
-            >
-              <div className="text-6xl mb-4">🔍</div>
-              <h3 className="text-2xl font-bold text-[color:var(--foreground)] mb-2">
-                No projects found
-              </h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6">
-                Try adjusting your filters or search query
-              </p>
-              <Button onClick={clearFilters} variant="primary">
-                Clear Filters
-              </Button>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="project-grid"
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              data-component="Project Grid"
-              data-type="Layout"
-            >
-              {filteredAndSortedProjects.map((project) => {
-                const originalIndex = projects.findIndex(p => p.title === project.title);
-                const isFlagship = project.title === 'MalikClaw' || project.title.includes('Digital FTE');
-                return (
-                <motion.div
-                  key={project.title}
-                  variants={cardVariants}
-                  className="h-full"
-                  data-component="Project Card"
-                  data-type="Interactive Component"
-                  data-tech="Framer Motion"
-                >
-                  <ProjectCard3D
-                    className={`group glass glow-card rounded-2xl p-8 hover:shadow-2xl transition-all duration-500 flex flex-col h-full bg-[color:var(--background-secondary)]/40 backdrop-blur-2xl ${
-                      isFlagship 
-                        ? 'flagship-pulse hover:border-[color:var(--accent-secondary)]/60' 
-                        : 'border-white/5 hover:border-[color:var(--accent)]/30'
-                    }`}
-                    glareColor={isFlagship ? 'rgba(236, 72, 153, 0.25)' : 'rgba(99, 102, 241, 0.2)'}
-                  >
-                    <div className="text-6xl mb-6 transform group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500">
-                      {project.image}
-                    </div>
-                    <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-shimmer transition-all duration-300">
-                      {project.title}
-                    </h3>
-                    <p className="text-gray-400 group-hover:text-gray-300 mb-6 flex-grow transition-colors">
-                      {project.description}
-                    </p>
-
-                    <div className="space-y-4">
-                      <div className="flex flex-wrap gap-2" data-tech="Tech Stack List">
-                        {project.tech.map((tech, techIndex) => (
-                          <span
-                            key={techIndex}
-                            className="px-3 py-1 bg-[color:var(--accent)]/[0.1] text-[color:var(--accent)] rounded-full text-xs font-medium border border-[color:var(--accent)]/20"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-
-                      <div className="flex gap-3 relative z-30">
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          onClick={(e: React.MouseEvent) => {
-                             e.stopPropagation();
-                             setSelectedProject(originalIndex);
-                          }}
-                          rightIcon={
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                          }
-                        >
-                          Learn More
-                        </Button>
-                        {project.liveUrl && (
-                          <a
-                            href={project.liveUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Button variant="ghost" size="sm">
-                              Live Demo
-                            </Button>
-                          </a>
-                        )}
-                        {project.githubUrl && (
-                          <a
-                            href={project.githubUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Button variant="ghost" size="sm">
-                              View Code
-                            </Button>
-                          </a>
-                        )}
-                      </div>
-
-                      {/* MCP Market + A2AS Certificate Node Strip (MalikClaw only) */}
-                      {(project.mcpMarketUrl || project.certificateUrl) && (
-                        <div className="pt-3 mt-1 border-t border-white/5 flex flex-col gap-2 relative z-30">
-                          {project.mcpMarketUrl && (
-                            <a
-                              href={project.mcpMarketUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-violet-500/10 border border-violet-500/25 text-violet-300 hover:bg-violet-500/20 hover:border-violet-500/50 transition-all text-xs font-semibold group/mcp"
-                            >
-                              <span className="relative flex h-2 w-2 shrink-0">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
-                              </span>
-                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M12 5l7 7-7 7" /></svg>
-                              MCP Market Listing
-                              <svg className="w-3 h-3 ml-auto opacity-50 group-hover/mcp:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                            </a>
-                          )}
-                          {project.certificateUrl && (
-                            <a
-                              href={project.certificateUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 hover:bg-emerald-500/20 hover:border-emerald-500/50 transition-all text-xs font-semibold group/cert"
-                            >
-                              <span className="relative flex h-2 w-2 shrink-0">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                              </span>
-                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-                              A2AS Certificate
-                              <svg className="w-3 h-3 ml-auto opacity-50 group-hover/cert:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                            </a>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </ProjectCard3D>
-                </motion.div>
-
-              );
-            })}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Project Modal */}
-        {selectedProject !== null && (
+        {/* Modal */}
+        {selectedProject && (
           <ProjectModal
-            isOpen={selectedProject !== null}
+            isOpen={!!selectedProject}
             onClose={() => setSelectedProject(null)}
+            mcpMarketUrl={selectedProject.mcpMarketUrl}
             project={{
-              ...projects[selectedProject],
-              tags: projects[selectedProject].tech,
+              title: selectedProject.title,
+              description: selectedProject.description,
+              longDescription: selectedProject.longDescription,
+              image: selectedProject.image || '🤖',
+              tags: selectedProject.tech,
+              githubUrl: selectedProject.githubUrl,
+              liveUrl: selectedProject.liveUrl,
+              features: selectedProject.keyCapabilities || [selectedProject.description],
+              challenges: selectedProject.challenges || [],
+              technologies: selectedProject.tech,
+              results: selectedProject.results || [],
             }}
-            mcpMarketUrl={projects[selectedProject]?.mcpMarketUrl}
           />
         )}
       </div>
@@ -649,4 +316,3 @@ const Projects = () => {
 };
 
 export default Projects;
-

@@ -38,14 +38,13 @@ export function preparePortfolioChunks(): ContentChunk[] {
 
   // 2. Contact Information Chunk
   chunks.push({
-    content: `Contact information for ${PERSONAL_INFO.name}: Email: ${PERSONAL_INFO.email}, LinkedIn: ${PERSONAL_INFO.linkedin}, GitHub: ${PERSONAL_INFO.github}, Instagram: ${PERSONAL_INFO.instagram}`,
+    content: `Contact information for ${PERSONAL_INFO.name}: Email: ${PERSONAL_INFO.email}, LinkedIn: ${PERSONAL_INFO.linkedin}, GitHub: ${PERSONAL_INFO.github}`,
     contentType: 'contact',
     category: 'contact',
     metadata: {
       email: PERSONAL_INFO.email,
       linkedin: PERSONAL_INFO.linkedin,
-      github: PERSONAL_INFO.github,
-      instagram: PERSONAL_INFO.instagram
+      github: PERSONAL_INFO.github
     }
   });
 
@@ -83,7 +82,7 @@ export function preparePortfolioChunks(): ContentChunk[] {
 
   // 6. GitHub Repositories Chunk
   chunks.push({
-    content: `GitHub repositories: Main portfolio: ${GITHUB_REPOS.main}, Web development projects: ${GITHUB_REPOS.webProjects}, Agentic AI projects: ${GITHUB_REPOS.agenticAI}`,
+    content: `GitHub repositories: Main portfolio: ${GITHUB_REPOS.main}, MalikClaw: ${GITHUB_REPOS.malikclaw}, Digital FTE: ${GITHUB_REPOS.digitalFTE}, Customer Success Agent: ${GITHUB_REPOS.customerSuccess}, Agentic AI projects: ${GITHUB_REPOS.agenticAI}`,
     contentType: 'contact',
     category: 'github',
     metadata: GITHUB_REPOS
@@ -91,7 +90,8 @@ export function preparePortfolioChunks(): ContentChunk[] {
 
   // 7. Each Project as a Chunk
   PROJECTS.forEach(project => {
-    const linkText = project.link ? `Link: ${project.link}` : 'Coming soon';
+    const projectUrl = project.liveUrl || project.githubUrl || '';
+    const linkText = projectUrl ? `Link: ${projectUrl}` : 'Internal Project';
     chunks.push({
       content: `Project: ${project.title}. ${project.description} Technologies used: ${project.tech.join(', ')}. ${linkText}`,
       contentType: 'project',
@@ -100,7 +100,7 @@ export function preparePortfolioChunks(): ContentChunk[] {
         title: project.title,
         description: project.description,
         tech: project.tech,
-        link: project.link,
+        link: projectUrl,
         category: project.category
       }
     });
@@ -163,7 +163,6 @@ Contact Information:
 - Email: ${PERSONAL_INFO.email}
 - LinkedIn: ${PERSONAL_INFO.linkedin}
 - GitHub: ${PERSONAL_INFO.github}
-- Instagram: ${PERSONAL_INFO.instagram}
 
 For any inquiries or collaboration opportunities, please reach out via LinkedIn or email.`
   });
@@ -186,7 +185,9 @@ ${ABOUT.philosophy}
 
 GitHub Repositories:
 - Main Profile: ${GITHUB_REPOS.main}
-- Web Development Projects: ${GITHUB_REPOS.webProjects}
+- MalikClaw: ${GITHUB_REPOS.malikclaw}
+- Digital FTE: ${GITHUB_REPOS.digitalFTE}
+- Customer Success Agent: ${GITHUB_REPOS.customerSuccess}
 - Agentic AI Projects: ${GITHUB_REPOS.agenticAI}`
   });
 
@@ -202,13 +203,14 @@ ${PROJECTS.map((project, idx) =>
    Category: ${project.category}
    Description: ${project.description}
    Technologies: ${project.tech.join(', ')}
-   ${project.link ? `Link: ${project.link}` : ''}`
+   ${project.liveUrl || project.githubUrl ? `Link: ${project.liveUrl || project.githubUrl}` : ''}`
 ).join('\n\n')}`
   });
 
   // 4. Individual Project Files
   PROJECTS.forEach(project => {
     const filename = `project_${project.title.toLowerCase().replace(/\s+/g, '_')}.txt`;
+    const projectUrl = project.liveUrl || project.githubUrl || '';
     files.push({
       filename,
       content: `Project: ${project.title}
@@ -221,7 +223,7 @@ ${project.description}
 Technologies Used:
 ${project.tech.map(t => `- ${t}`).join('\n')}
 
-${project.link ? `Project Link: ${project.link}` : ''}
+${projectUrl ? `Project Link: ${projectUrl}` : ''}
 
 This project demonstrates ${PERSONAL_INFO.name}'s expertise in ${project.tech.slice(0, 2).join(' and ')}.`
     });
