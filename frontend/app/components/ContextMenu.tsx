@@ -2,22 +2,23 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Bot, FileText, Copy, Terminal, Layers, Home, Check } from 'lucide-react';
 
-const ContextMenu = () => {
+export default function ContextMenu() {
   const [visible, setVisible] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [copied, setCopied] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
       
-      // Calculate position to keep menu within viewport
       let x = e.pageX;
       let y = e.pageY;
       
-      const menuWidth = 200;
-      const menuHeight = 250;
+      const menuWidth = 220;
+      const menuHeight = 260;
       
       if (x + menuWidth > window.innerWidth) x -= menuWidth;
       if (y + menuHeight > window.innerHeight) y -= menuHeight;
@@ -31,8 +32,8 @@ const ContextMenu = () => {
     };
 
     const handleScroll = () => {
-        if (visible) setVisible(false);
-    }
+      if (visible) setVisible(false);
+    };
 
     document.addEventListener('contextmenu', handleContextMenu);
     document.addEventListener('click', handleClick);
@@ -47,41 +48,48 @@ const ContextMenu = () => {
 
   const menuItems = [
     {
-      label: '✨ Ask AI Assistant',
+      label: 'Ask AI Assistant',
+      icon: Bot,
       action: () => {
         const event = new CustomEvent('open-portfolio-chat');
         window.dispatchEvent(event);
       }
     },
     {
-      label: '📄 Download Resume',
+      label: 'Download Resume (PDF)',
+      icon: FileText,
       action: () => window.open('/Abdullah_resume.pdf', '_blank')
     },
     {
-      label: '📋 Copy URL',
-      action: () => navigator.clipboard.writeText(window.location.href)
-    },
-    {
-      label: '💻 Developer Mode',
+      label: copied ? 'Copied URL!' : 'Copy Portfolio URL',
+      icon: copied ? Check : Copy,
       action: () => {
-         const event = new KeyboardEvent('keydown', { key: '`', code: 'Backquote', ctrlKey: true });
-         document.dispatchEvent(event);
-         // Also dispatch a custom event just in case
-         window.dispatchEvent(new CustomEvent('toggle-dev-terminal'));
+        navigator.clipboard.writeText(window.location.href);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
       }
     },
     {
-        label: '👁️ Toggle Architecture',
-        action: () => {
-            document.body.classList.toggle('xray-mode');
-        }
+      label: 'Developer Terminal',
+      icon: Terminal,
+      action: () => {
+        window.dispatchEvent(new CustomEvent('toggle-dev-terminal'));
+      }
+    },
+    {
+      label: 'Toggle Architecture X-Ray',
+      icon: Layers,
+      action: () => {
+        document.body.classList.toggle('xray-mode');
+      }
     },
     { separator: true },
     {
-      label: '🏠 Go Home',
+      label: 'Back to Top',
+      icon: Home,
       action: () => {
         const home = document.getElementById('home');
-        if(home) home.scrollIntoView({ behavior: 'smooth'});
+        if (home) home.scrollIntoView({ behavior: 'smooth' });
       }
     }
   ];
@@ -91,32 +99,35 @@ const ContextMenu = () => {
       {visible && (
         <motion.div
           ref={menuRef}
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          transition={{ duration: 0.1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.12 }}
           style={{ top: position.y, left: position.x }}
-          className="fixed z-[9999] w-56 glass border border-white/10 rounded-xl shadow-2xl backdrop-blur-xl bg-black/80 overflow-hidden"
+          className="fixed z-[9999] w-56 glass border border-white/15 rounded-2xl shadow-2xl backdrop-blur-2xl bg-slate-950/95 overflow-hidden p-1.5"
         >
-          <div className="py-1">
-            {menuItems.map((item, index) => (
-              item.separator ? (
-                <div key={index} className="h-px bg-white/10 my-1" />
-              ) : (
+          <div className="space-y-0.5">
+            {menuItems.map((item, index) => {
+              if (item.separator) {
+                return <div key={index} className="h-px bg-white/[0.08] my-1" />;
+              }
+
+              const Icon = item.icon!;
+
+              return (
                 <button
                   key={index}
                   onClick={item.action}
-                  className="w-full text-left px-4 py-2.5 text-sm text-gray-200 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2"
+                  className="w-full text-left px-3 py-2 rounded-xl text-xs text-slate-300 hover:text-white hover:bg-white/[0.08] transition-colors flex items-center gap-2.5 cursor-pointer font-sans"
                 >
-                    {item.label}
+                  <Icon className="w-4 h-4 text-cyan-400 shrink-0" />
+                  <span>{item.label}</span>
                 </button>
-              )
-            ))}
+              );
+            })}
           </div>
         </motion.div>
       )}
     </AnimatePresence>
   );
-};
-
-export default ContextMenu;
+}

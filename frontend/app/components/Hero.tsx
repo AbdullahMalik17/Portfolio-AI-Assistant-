@@ -1,128 +1,175 @@
 'use client';
 
-import { Link } from 'react-scroll';
-import SocialLinks from './SocialLinks';
-import TypewriterEffect from './TypewriterEffect';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { 
+  ArrowRight, MessageSquare, 
+  Layers, ShieldCheck, Globe2
+} from 'lucide-react';
 import Button from './Button';
-import NetworkBackground from './NetworkBackground';
 
-const Hero = () => {
+const TITLES = [
+  'Agentic AI Engineer',
+  'Autonomous Systems Architect',
+  'Go & MCP Runtime Specialist',
+  'Digital FTE Creator',
+];
+
+export default function Hero() {
+  const [titleIndex, setTitleIndex] = useState(0);
+  const [displayText, setDisplayText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const currentTitle = TITLES[titleIndex];
+    let timer: NodeJS.Timeout;
+
+    if (!isDeleting && displayText === currentTitle) {
+      timer = setTimeout(() => setIsDeleting(true), 2400);
+    } else if (isDeleting && displayText === '') {
+      setIsDeleting(false);
+      setTitleIndex((prev) => (prev + 1) % TITLES.length);
+    } else {
+      timer = setTimeout(
+        () => {
+          setDisplayText((prev) =>
+            isDeleting
+              ? currentTitle.substring(0, prev.length - 1)
+              : currentTitle.substring(0, prev.length + 1)
+          );
+        },
+        isDeleting ? 40 : 80
+      );
+    }
+
+    return () => clearTimeout(timer);
+  }, [displayText, isDeleting, titleIndex]);
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const openPortfolioChat = () => {
+    const event = new CustomEvent('open-portfolio-chat');
+    window.dispatchEvent(event);
+  };
+
   return (
-    <section
-      id="home"
-      data-component="Hero Section"
-      data-type="Client Component"
-      className="min-h-[92vh] flex items-center justify-center relative overflow-hidden pt-24 pb-12"
+    <section 
+      id="home" 
+      className="relative min-h-[92vh] flex items-center justify-center pt-24 pb-16 overflow-hidden"
     >
-      {/* Canvas Background */}
-      <div data-tech="Canvas Animation" className="absolute inset-0">
-        <NetworkBackground />
-      </div>
+      {/* Background Ambient Glows */}
+      <div className="ambient-glow ambient-glow-indigo top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+      <div className="ambient-glow ambient-glow-cyan top-1/2 right-1/4" />
+      <div className="ambient-glow ambient-glow-rose bottom-1/4 left-1/4" />
 
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
-        <div className="hero-glow top-[10%] left-[-10%] opacity-40"></div>
-        <div className="hero-glow bottom-[10%] right-[-10%] opacity-40" style={{ '--accent-glow': 'var(--accent-glow-secondary)' } as React.CSSProperties}></div>
-      </div>
+      {/* Cyber Noise & Subtle Grid */}
+      <div className="absolute inset-0 cyber-grid opacity-75 pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10" data-component="Content Wrapper" data-type="Layout">
-        <div className="text-center space-y-8">
-          {/* Identity Pill */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-[color:var(--accent)]/30 shadow-lg shadow-[color:var(--accent-glow)]/20 animate-fade-in-up">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-            </span>
-            <span className="text-xs font-mono font-semibold tracking-wider uppercase text-gray-200">
-              Abdullah Malik • Agentic AI Engineer
-            </span>
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        {/* Pulsating Availability Pill */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full glass border border-cyan-500/30 bg-slate-900/60 shadow-lg shadow-cyan-500/10 mb-8 cursor-pointer hover:border-cyan-400 transition-colors"
+          onClick={() => scrollToSection('contact')}
+        >
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+          </span>
+          <span className="text-xs font-mono font-bold tracking-wider text-slate-200 uppercase">
+            Available for Autonomous AI & Digital FTE Engineering
+          </span>
+        </motion.div>
+
+        {/* Engineer Name & Prestige Title */}
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-white mb-4"
+        >
+          Muhammad <span className="text-shimmer">Abdullah Malik</span>
+        </motion.h1>
+
+        {/* Dynamic Typewriter Role */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="h-12 sm:h-14 flex items-center justify-center mb-6"
+        >
+          <span className="text-xl sm:text-2xl md:text-3xl font-mono font-semibold text-cyan-300">
+            {displayText}
+            <span className="inline-block w-2.5 h-6 ml-1 bg-cyan-400 animate-pulse align-middle" />
+          </span>
+        </motion.div>
+
+        {/* High-Impact Value Proposition */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="text-base sm:text-lg md:text-xl text-slate-300 max-w-3xl mx-auto mb-10 leading-relaxed font-sans"
+        >
+          Architecting production <span className="text-white font-semibold">Autonomous Multi-Agent Systems</span>, 
+          ultra-lightweight <span className="text-cyan-300 font-mono font-medium">Go edge runtimes (&lt;10MB RAM)</span>, 
+          and verifiable <span className="text-indigo-300 font-semibold">Model Context Protocol (MCP)</span> pipelines.
+        </motion.p>
+
+        {/* Action Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="flex flex-wrap items-center justify-center gap-4 mb-14"
+        >
+          <Button
+            variant="cyber"
+            size="lg"
+            onClick={() => scrollToSection('projects')}
+            rightIcon={<ArrowRight className="w-4 h-4" />}
+          >
+            Explore Flagship Systems
+          </Button>
+
+          <Button
+            variant="secondary"
+            size="lg"
+            onClick={openPortfolioChat}
+            leftIcon={<MessageSquare className="w-4 h-4 text-cyan-400" />}
+          >
+            Talk with Digital FTE
+          </Button>
+        </motion.div>
+
+        {/* Trust Badges Strip */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="pt-6 border-t border-white/[0.08] flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs font-mono text-slate-400"
+        >
+          <div className="flex items-center gap-2">
+            <Globe2 className="w-4 h-4 text-purple-400" />
+            <span>MCP Market Listed System</span>
           </div>
-
-          {/* Main Headline */}
-          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.05]">
-            Engineering <br className="hidden sm:block" />
-            <span className="text-shimmer">Autonomous AI Systems</span>
-            <br />
-            & Digital FTEs
-          </h1>
-
-          {/* Subheading Positioning Statement */}
-          <p className="text-lg sm:text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto font-normal leading-relaxed">
-            I build autonomous AI systems, Digital FTEs, MCP-powered tools, and production-ready agentic workflows using{' '}
-            <span className="text-[color:var(--neon-cyan)] font-semibold inline-block font-mono">
-              <TypewriterEffect
-                words={[
-                  'Go & Python Gateways',
-                  'Model Context Protocol (MCP)',
-                  'Multi-Agent Systems',
-                  'pgvector & RAG Memory',
-                  'Autonomous ADB Automation',
-                ]}
-                typeSpeed={80}
-                deleteSpeed={40}
-                delayBetweenWords={2200}
-              />
-            </span>
-          </p>
-
-          {/* Call to Actions */}
-          <div className="flex flex-wrap justify-center items-center gap-4 pt-2 animate-fade-in-up">
-            <Link
-              to="projects"
-              smooth={true}
-              offset={-70}
-              duration={500}
-              className="px-8 py-4 bg-gradient-to-r from-[color:var(--accent)] to-[color:var(--accent-secondary)] text-white rounded-full font-bold text-base hover:opacity-90 hover:scale-105 transition-all shadow-[0_0_25px_rgba(99,102,241,0.4)] cursor-pointer flex items-center gap-2"
-            >
-              View My Work
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </Link>
-
-            <a
-              href="https://github.com/AbdullahMalik17"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button
-                variant="outline"
-                size="lg"
-                leftIcon={
-                  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-                  </svg>
-                }
-              >
-                GitHub Profile
-              </Button>
-            </a>
-
-            <a
-              href="/Abdullah_resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button
-                variant="outline"
-                size="lg"
-                rightIcon={
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                }
-              >
-                Resume
-              </Button>
-            </a>
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span>A2AS Behavior Certified</span>
           </div>
-
-          <div className="flex justify-center pt-6 relative z-20">
-            <SocialLinks />
+          <div className="flex items-center gap-2">
+            <Layers className="w-4 h-4 text-cyan-400" />
+            <span>Go • Kafka • pgvector • Docker</span>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
-};
-
-export default Hero;
+}

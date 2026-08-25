@@ -1,62 +1,73 @@
 'use client';
 
-import { FaGithub, FaLinkedin, FaEnvelope, FaTwitter, FaFilePdf } from 'react-icons/fa';
+import { motion } from 'framer-motion';
+import { Github, Linkedin, Twitter, Mail, FileText } from 'lucide-react';
+import { PERSONAL_INFO } from '@/app/lib/portfolio-data';
 
-const SocialLinks = ({ className = '' }: { className?: string }) => {
-    const links = [
-        {
-            name: 'GitHub',
-            icon: <FaGithub className="w-6 h-6" />,
-            url: 'https://github.com/AbdullahMalik17',
-            color: 'hover:text-gray-800 dark:hover:text-white',
-            ariaLabel: "Visit Abdullah Malik's GitHub profile",
-        },
-        {
-            name: 'LinkedIn',
-            icon: <FaLinkedin className="w-6 h-6" />,
-            url: 'https://www.linkedin.com/in/muhammad-abdullah-athar',
-            color: 'hover:text-blue-600',
-            ariaLabel: "Visit Abdullah Malik's LinkedIn profile",
-        },
-        {
-            name: 'Twitter',
-            icon: <FaTwitter className="w-6 h-6" />,
-            url: 'https://x.com/Ab4695Athar?t=nqRO0biMuBDrTIuzZOHq8A&s=08',
-            color: 'hover:text-blue-400',
-            ariaLabel: "Visit Abdullah Malik's Twitter profile",
-        },
-        {
-            name: 'Email',
-            icon: <FaEnvelope className="w-6 h-6" />,
-            url: 'mailto:muhammadabdullah51700@gmail.com',
-            color: 'hover:text-red-500',
-            ariaLabel: "Send an email to Abdullah Malik",
-        },
-        {
-            name: 'Resume',
-            icon: <FaFilePdf className="w-6 h-6" />,
-            url: '/Abdullah_resume.pdf',
-            color: 'hover:text-red-600',
-            ariaLabel: "View Abdullah Malik's Resume",
-        },
-    ];
+interface SocialLinksProps {
+  className?: string;
+  showLabels?: boolean;
+}
 
-    return (
-        <div className={`flex items-center gap-6 ${className}`}>
-            {links.map((link) => (
-                <a
-                    key={link.name}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`text-gray-500 dark:text-gray-400 transition-all duration-300 transform hover:scale-110 ${link.color}`}
-                    aria-label={link.ariaLabel || `Visit Abdullah Malik's ${link.name} profile`}
-                >
-                    {link.icon}
-                </a>
-            ))}
-        </div>
-    );
+const SocialLinks = ({ className = '', showLabels = false }: SocialLinksProps) => {
+  const links = [
+    {
+      name: 'GitHub',
+      icon: <Github className="w-4 h-4" />,
+      url: PERSONAL_INFO.github,
+      hoverBorder: 'hover:border-white/40 hover:text-white',
+      ariaLabel: "Visit Abdullah Malik's GitHub profile",
+    },
+    {
+      name: 'LinkedIn',
+      icon: <Linkedin className="w-4 h-4" />,
+      url: PERSONAL_INFO.linkedin,
+      hoverBorder: 'hover:border-cyan-500/50 hover:text-cyan-400 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)]',
+      ariaLabel: "Visit Abdullah Malik's LinkedIn profile",
+    },
+    {
+      name: 'Twitter',
+      icon: <Twitter className="w-4 h-4" />,
+      url: PERSONAL_INFO.twitter || 'https://x.com/Ab4695Athar',
+      hoverBorder: 'hover:border-indigo-500/50 hover:text-indigo-400 hover:shadow-[0_0_15px_rgba(99,102,241,0.3)]',
+      ariaLabel: "Visit Abdullah Malik's Twitter profile",
+    },
+    {
+      name: 'Email',
+      icon: <Mail className="w-4 h-4" />,
+      url: `mailto:${PERSONAL_INFO.email}`,
+      hoverBorder: 'hover:border-emerald-500/50 hover:text-emerald-400 hover:shadow-[0_0_15px_rgba(16,185,129,0.3)]',
+      ariaLabel: "Send an email to Abdullah Malik",
+    },
+    {
+      name: 'Resume',
+      icon: <FileText className="w-4 h-4" />,
+      url: '/Abdullah_resume.pdf',
+      hoverBorder: 'hover:border-pink-500/50 hover:text-pink-400 hover:shadow-[0_0_15px_rgba(236,72,153,0.3)]',
+      ariaLabel: "View Abdullah Malik's Resume PDF",
+    },
+  ];
+
+  return (
+    <div className={`flex items-center gap-3 ${className}`}>
+      {links.map((link) => (
+        <motion.a
+          key={link.name}
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          whileHover={{ scale: 1.08, y: -2 }}
+          whileTap={{ scale: 0.95 }}
+          className={`flex items-center gap-2 p-2.5 rounded-xl glass border border-white/[0.08] text-slate-400 transition-all duration-300 ${link.hoverBorder}`}
+          aria-label={link.ariaLabel}
+          title={link.name}
+        >
+          {link.icon}
+          {showLabels && <span className="text-xs font-mono font-medium">{link.name}</span>}
+        </motion.a>
+      ))}
+    </div>
+  );
 };
 
 export default SocialLinks;

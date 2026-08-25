@@ -4,18 +4,25 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { scroller } from 'react-scroll';
 import {
-  Send, Bot, User, Loader2, Minimize2,
-  Sparkles, ThumbsUp, ThumbsDown, Copy,
-  RotateCcw, Mic,
+  Send, Bot, Minimize2,
+  Copy, Check, RotateCcw, Mic, MicOff,
+  Zap
 } from 'lucide-react';
 
 // ---------- Types ----------
+interface ToolCallEvent {
+  action: string;
+  args?: Record<string, unknown>;
+  timestamp: Date;
+}
+
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
   reaction?: 'like' | 'dislike';
+  toolCalls?: ToolCallEvent[];
 }
 
 interface SpeechRecognitionEvent {
@@ -33,10 +40,7 @@ interface SpeechRecognition {
 interface IWebkitSpeechRecognition { new(): SpeechRecognition }
 declare global { interface Window { webkitSpeechRecognition: IWebkitSpeechRecognition } }
 
-// ---------- Helpers ----------
-function cx(...c: (string | false | undefined | null)[]) { return c.filter(Boolean).join(' '); }
-
-const STORAGE_KEY = 'portfolio-chat-history';
+const STORAGE_KEY = 'portfolio-chat-history-v2';
 
 function loadMessages(): Message[] {
   if (typeof window === 'undefined') return [];
@@ -50,104 +54,75 @@ function loadMessages(): Message[] {
 
 function saveMessages(msgs: Message[]) {
   try {
-    // Keep last 50 messages to avoid bloating storage
     const toSave = msgs.slice(-50);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
-  } catch { /* quota exceeded - ignore */ }
+  } catch { /* storage quota */ }
 }
 
-const suggestedQuestions = [
-  'What are your top skills?',
-  'Tell me about your projects',
-  "What's your experience?",
-  'How can I contact you?',
+const quickPromptChips = [
+  'How does MalikClaw run on edge hardware?',
+  'Explain the Digital FTE dual-agent isolation',
+  'Show Customer Success Kafka architecture',
+  'What are your top Go & Python skills?',
 ];
 
-// ---------- Component ----------
 export default function ChatbotWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const welcomeMsg: Message = {
     id: 'welcome',
     role: 'assistant',
-    content: "Hi! I'm Abdullah's AI assistant. Ask me anything about his skills, projects, or experience.",
+    content: "Hi! I'm Abdullah's AI Assistant. I can explain his autonomous systems, inspect MalikClaw's Go runtime, or navigate portfolio sections for you. What would you like to explore?",
     timestamp: new Date(),
   };
+
   const [messages, setMessages] = useState<Message[]>([welcomeMsg]);
   const [hydrated, setHydrated] = useState(false);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeTool, setActiveTool] = useState<string | null>(null);
+  const [isListening, setIsListening] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
-  // Load persisted messages on mount (client only)
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+
+  // Load messages from localStorage on mount
   useEffect(() => {
     const saved = loadMessages();
     if (saved.length > 0) setMessages(saved);
     setHydrated(true);
   }, []);
 
-  // Persist messages whenever they change
+  // Save messages to localStorage
   useEffect(() => {
     if (hydrated) saveMessages(messages);
   }, [messages, hydrated]);
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(true);
-  const [isListening, setIsListening] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
 
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
-
-  // Auto-scroll
+  // Auto-scroll to bottom
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [messages, isOpen]);
+  }, [messages, isOpen, activeTool]);
 
-  // Hide suggestions after 2 messages
-  useEffect(() => { if (messages.length > 2) setShowSuggestions(false); }, [messages]);
-
-  // Toast auto-dismiss
+  // Toast timer
   useEffect(() => {
-    if (toast) { const t = setTimeout(() => setToast(null), 2500); return () => clearTimeout(t); }
+    if (toast) {
+      const t = setTimeout(() => setToast(null), 2500);
+      return () => clearTimeout(t);
+    }
   }, [toast]);
 
-  // Speech Recognition
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.webkitSpeechRecognition) {
-      const r = new window.webkitSpeechRecognition();
-      r.continuous = false; r.interimResults = false; r.lang = 'en-US';
-      r.onstart = () => setIsListening(true);
-      r.onresult = (e: SpeechRecognitionEvent) => { setInput(e.results[0][0].transcript); };
-      r.onerror = () => setIsListening(false);
-      r.onend = () => setIsListening(false);
-      recognitionRef.current = r;
-    }
-  }, []);
-
-  // Simulated fallback responses
-  function getSimulatedResponse(msg: string): string {
-    const m = msg.toLowerCase();
-    if (m.includes('skill') || m.includes('tech'))
-      return "Abdullah specializes in:\n\n• AI/ML: OpenAI GPT-4, Gemini, Claude, LangChain, pgvector\n• Backend: Python, FastAPI, PostgreSQL, Kafka, Docker\n• Frontend: Next.js 16, React 19, TypeScript, Tailwind CSS\n• Cloud: Vercel, Azure, Kubernetes, CI/CD\n\nWant to know about a specific technology?";
-    if (m.includes('project'))
-      return "Abdullah has built 7+ production AI projects:\n\n1. Digital FTE - AI agent for 24/7 personal automation\n2. Customer Success FTE - Multi-channel AI support (Email, WhatsApp, Web)\n3. Physical AI Platform - Educational robotics with RAG chatbot\n4. Voice Assistant - Privacy-first voice AI\n5. AI Code Assistant - Code generation & debugging\n\nAsk about any specific project for more details!";
-    if (m.includes('contact') || m.includes('email') || m.includes('reach'))
-      return "You can reach Abdullah at:\n\n• Email: muhammadabdullah51700@gmail.com\n• LinkedIn: linkedin.com/in/muhammad-abdullah-athar\n• GitHub: github.com/AbdullahMalik17\n\nOr use the contact form on this page!";
-    if (m.includes('experience') || m.includes('work'))
-      return "Abdullah is a Full-Stack Developer & AI Specialist building intelligent solutions. He combines AI/ML with modern web tech to create production-grade systems.\n\nHighlights:\n• Built autonomous AI agents with dual-architecture design\n• Implemented event-driven systems with Kafka\n• Deployed to Kubernetes with full CI/CD pipelines";
-    if (m.includes('hello') || m.includes('hi') || m.includes('hey'))
-      return "Hello! Great to meet you! I can tell you about Abdullah's:\n\n• Technical skills & expertise\n• AI/ML projects\n• Work experience\n• Contact information\n\nWhat would you like to know?";
-    return "Thanks for your interest! I can tell you about Abdullah's skills, projects, experience, or how to contact him. What would you like to know?";
-  }
-
-  // Execute actions triggered by the AI agent
-  const executeBrowserAction = useCallback((action: string, args?: { section?: string }) => {
+  // Browser actions execution
+  const executeBrowserAction = useCallback((action: string, args?: Record<string, unknown>) => {
     switch (action) {
       case 'scroll_to_section':
-        if (args && args.section) {
+        if (args && typeof args.section === 'string') {
           const sectionId = args.section.toLowerCase();
           const element = document.getElementById(sectionId);
           if (element) {
             element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            setToast(`Scrolling to ${sectionId}...`);
+            setToast(`Navigating to ${sectionId}...`);
           } else {
             scroller.scrollTo(sectionId, {
               duration: 500,
@@ -155,42 +130,33 @@ export default function ChatbotWidget() {
               smooth: 'easeInOutQuart',
               offset: -70
             });
-            setToast(`Scrolling to ${sectionId}...`);
+            setToast(`Navigating to ${sectionId}...`);
           }
         }
         break;
       case 'open_resume':
         window.open('/Abdullah_resume.pdf', '_blank');
-        setToast('Opening resume...');
+        setToast('Opening Abdullah Malik Resume PDF...');
         break;
       case 'focus_contact_form':
         const contactSection = document.getElementById('contact');
         if (contactSection) {
           contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-          scroller.scrollTo('contact', {
-            duration: 500,
-            smooth: 'easeInOutQuart',
-            offset: -70
-          });
         }
         setTimeout(() => {
-          const nameInput = document.querySelector('input[placeholder*="Name"]') as HTMLInputElement;
-          const emailInput = document.querySelector('input[placeholder*="Email"]') as HTMLInputElement;
+          const nameInput = document.querySelector('input[name="name"]') as HTMLInputElement;
           if (nameInput) {
             nameInput.focus();
-            setToast('Focusing contact form... Write your message!');
-          } else if (emailInput) {
-            emailInput.focus();
+            setToast('Focusing contact message input...');
           }
         }, 800);
         break;
       default:
-        console.warn('Unknown browser action:', action);
+        console.warn('Unknown tool action:', action);
     }
   }, []);
 
-  // Send message with streaming support
+  // Send message with streaming tool execution support
   const sendMessage = useCallback(async (textOverride?: string) => {
     const text = (textOverride || input).trim();
     if (!text || isLoading) return;
@@ -201,392 +167,407 @@ export default function ChatbotWidget() {
       content: text,
       timestamp: new Date(),
     };
-    setMessages(prev => [...prev, userMsg]);
+
+    setMessages((prev) => [...prev, userMsg]);
     setInput('');
     setIsLoading(true);
-    setShowSuggestions(false);
+    setActiveTool('Querying Agent Reasoning Core...');
 
-    const assistantId = (Date.now() + 1).toString();
+    const assistantMsgId = (Date.now() + 1).toString();
+    const assistantMsg: Message = {
+      id: assistantMsgId,
+      role: 'assistant',
+      content: '',
+      timestamp: new Date(),
+      toolCalls: [],
+    };
+
+    setMessages((prev) => [...prev, assistantMsg]);
 
     try {
-      // Build conversation history for persistent memory (exclude welcome msg)
-      const history = [...messages, userMsg]
-        .filter(m => m.id !== 'welcome')
-        .slice(-20) // send last 20 messages for context
-        .map(m => ({ role: m.role, content: m.content }));
-
-      const res = await fetch('/api/chat', {
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, history: history.slice(0, -1) }), // history = prior messages, not current
-      }).catch(() => null);
+        body: JSON.stringify({
+          message: text,
+          history: messages.slice(-8).map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      });
 
-      if (!res) {
-        // No connection - use simulated response
-        setMessages(prev => [...prev, {
-          id: assistantId, role: 'assistant',
-          content: getSimulatedResponse(text), timestamp: new Date(),
-        }]);
-        return;
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
       }
 
-      const contentType = res.headers.get('content-type') || '';
+      const contentType = response.headers.get('content-type') || '';
 
       if (contentType.includes('text/event-stream')) {
-        // Streaming response - show tokens in real-time
-        const reader = res.body?.getReader();
+        const reader = response.body?.getReader();
         const decoder = new TextDecoder();
         let fullText = '';
-
-        // Add empty assistant message to fill
-        setMessages(prev => [...prev, {
-          id: assistantId, role: 'assistant', content: '', timestamp: new Date(),
-        }]);
+        const executedTools: ToolCallEvent[] = [];
 
         if (reader) {
-          setIsLoading(false); // Stop loading indicator once streaming starts
           while (true) {
             const { done, value } = await reader.read();
             if (done) break;
+
             const chunk = decoder.decode(value, { stream: true });
             const lines = chunk.split('\n');
+
             for (const line of lines) {
-              if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+              if (line.startsWith('data: ')) {
+                const dataStr = line.slice(6).trim();
+                if (dataStr === '[DONE]') continue;
+
                 try {
-                  const data = JSON.parse(line.slice(6));
-                  if (data.action) {
-                    executeBrowserAction(data.action, data.args);
-                  }
-                  if (data.text) {
-                    fullText += data.text;
-                    const captured = fullText;
-                    setMessages(prev =>
-                      prev.map(m => m.id === assistantId ? { ...m, content: captured } : m)
+                  const parsed = JSON.parse(dataStr);
+                  if (parsed.text) {
+                    fullText += parsed.text;
+                    setActiveTool(null);
+                    setMessages((prev) =>
+                      prev.map((m) =>
+                        m.id === assistantMsgId ? { ...m, content: fullText } : m
+                      )
+                    );
+                  } else if (parsed.action) {
+                    setActiveTool(`Tool: ${parsed.action.replace(/_/g, ' ')}`);
+                    executeBrowserAction(parsed.action, parsed.args);
+                    executedTools.push({
+                      action: parsed.action,
+                      args: parsed.args,
+                      timestamp: new Date(),
+                    });
+                    setMessages((prev) =>
+                      prev.map((m) =>
+                        m.id === assistantMsgId ? { ...m, toolCalls: [...executedTools] } : m
+                      )
                     );
                   }
-                } catch { /* skip parse errors */ }
+                } catch {
+                  // Ignore JSON parse chunk errors
+                }
               }
             }
           }
         }
-        if (!fullText) {
-          setMessages(prev =>
-            prev.map(m => m.id === assistantId ? { ...m, content: getSimulatedResponse(text) } : m)
-          );
-        }
       } else {
-        // JSON response (fallback mode)
-        const data = await res.json();
-        if (data.action) {
-          executeBrowserAction(data.action, data.args);
-        }
-        const reply = data.response || getSimulatedResponse(text);
-        setMessages(prev => [...prev, {
-          id: assistantId, role: 'assistant', content: reply, timestamp: new Date(),
-        }]);
+        const data = await response.json();
+        const fallbackText = data.response || "I'm Abdullah's AI Assistant. Ask me about MalikClaw, Digital FTEs, or his skills!";
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantMsgId ? { ...m, content: fallbackText } : m
+          )
+        );
       }
-    } catch {
-      setMessages(prev => [...prev, {
-        id: assistantId, role: 'assistant',
-        content: getSimulatedResponse(text), timestamp: new Date(),
-      }]);
+    } catch (error) {
+      console.error('Chat error:', error);
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === assistantMsgId
+            ? {
+                ...m,
+                content:
+                  "Abdullah specializes in Agentic AI Systems, Go Edge runtimes (MalikClaw), Model Context Protocol (MCP), and Kafka-driven Digital FTEs. Feel free to explore the sections or ask specific questions!",
+              }
+            : m
+        )
+      );
     } finally {
       setIsLoading(false);
-      inputRef.current?.focus();
+      setActiveTool(null);
     }
   }, [input, isLoading, messages, executeBrowserAction]);
 
-  // Custom event handler for CommandPalette / ContextMenu / DeveloperTerminal
+  // Custom Event Listener to trigger AI Chat externally
   useEffect(() => {
-    const handler = (e: CustomEvent) => {
+    const handleCustomOpen = (e: Event) => {
+      const customEvent = e as CustomEvent<string | undefined>;
       setIsOpen(true);
-      if (e.detail) setTimeout(() => sendMessage(e.detail), 100);
+      if (customEvent.detail) {
+        setTimeout(() => {
+          sendMessage(customEvent.detail);
+        }, 300);
+      }
     };
-    window.addEventListener('open-portfolio-chat', handler as EventListener);
-    return () => window.removeEventListener('open-portfolio-chat', handler as EventListener);
+
+    window.addEventListener('open-portfolio-chat', handleCustomOpen);
+    return () => window.removeEventListener('open-portfolio-chat', handleCustomOpen);
   }, [sendMessage]);
 
-  const handleReaction = (id: string, reaction: 'like' | 'dislike') => {
-    setMessages(prev => prev.map(m =>
-      m.id === id ? { ...m, reaction: m.reaction === reaction ? undefined : reaction } : m
-    ));
-    setToast(reaction === 'like' ? 'Thanks for the feedback!' : "We'll improve!");
+  // Speech Recognition Setup
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.webkitSpeechRecognition) {
+      const r = new window.webkitSpeechRecognition();
+      r.continuous = false;
+      r.interimResults = false;
+      r.lang = 'en-US';
+      r.onstart = () => setIsListening(true);
+      r.onresult = (e: SpeechRecognitionEvent) => {
+        setInput(e.results[0][0].transcript);
+      };
+      r.onerror = () => setIsListening(false);
+      r.onend = () => setIsListening(false);
+      recognitionRef.current = r;
+    }
+  }, []);
+
+  const toggleVoiceInput = () => {
+    if (!recognitionRef.current) {
+      setToast('Voice input is not supported in this browser.');
+      return;
+    }
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      recognitionRef.current.start();
+    }
   };
 
-  const copyMessage = (content: string) => {
+  const handleCopyText = (content: string, index: number) => {
     navigator.clipboard.writeText(content);
-    setToast('Copied to clipboard!');
+    setCopiedIndex(index);
+    setToast('Copied to clipboard');
+    setTimeout(() => setCopiedIndex(null), 2000);
   };
 
-  const clearChat = () => {
-    const freshMsg: Message = {
-      id: 'welcome-new', role: 'assistant',
-      content: "Chat cleared! Ask me anything about Abdullah's portfolio.",
-      timestamp: new Date(),
-    };
-    setMessages([freshMsg]);
-    setShowSuggestions(true);
-    setToast('Chat cleared!');
-    try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
-  };
-
-  const toggleListening = () => {
-    if (!recognitionRef.current) { alert('Speech recognition not supported in this browser.'); return; }
-    if (isListening) recognitionRef.current.stop(); else recognitionRef.current.start();
+  const handleResetChat = () => {
+    setMessages([welcomeMsg]);
+    localStorage.removeItem(STORAGE_KEY);
+    setToast('Conversation reset');
   };
 
   return (
-    <div className="fixed z-50 bottom-6 right-6">
-      {/* Toast */}
+    <>
+      {/* Floating Trigger Button */}
+      <motion.button
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.8, type: 'spring', damping: 15 }}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => setIsOpen((prev) => !prev)}
+        className="fixed bottom-6 right-6 z-50 p-4 rounded-2xl bg-gradient-to-r from-indigo-500 via-indigo-600 to-cyan-500 text-white shadow-2xl shadow-cyan-500/30 hover:shadow-cyan-500/50 border border-white/20 flex items-center gap-3 cursor-pointer group"
+        aria-label="Toggle AI Assistant"
+      >
+        <span className="relative flex h-3 w-3">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-300 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan-400"></span>
+        </span>
+        <Bot className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
+        <span className="text-xs font-mono font-bold uppercase tracking-wider hidden sm:inline">
+          Ask AI Assistant
+        </span>
+      </motion.button>
+
+      {/* Chatbot Window */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 25, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 25, scale: 0.95 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="fixed bottom-24 right-4 sm:right-6 w-[94vw] sm:w-[440px] h-[600px] max-h-[82vh] z-50 glass rounded-3xl border border-white/10 bg-slate-950/95 shadow-2xl flex flex-col overflow-hidden backdrop-blur-2xl"
+          >
+            {/* Window Header */}
+            <div className="px-5 py-4 bg-slate-900/90 border-b border-white/[0.08] flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-cyan-400 flex items-center justify-center text-white shadow-md">
+                  <Bot className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-white tracking-tight">
+                      Portfolio Digital FTE
+                    </h3>
+                    <span className="px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[9px] font-mono font-semibold">
+                      Gemini 2.5
+                    </span>
+                  </div>
+                  <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    Autonomous RAG & Function Calling
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={handleResetChat}
+                  className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                  title="Reset Conversation"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                  title="Minimize Assistant"
+                >
+                  <Minimize2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Messages Scroll Area */}
+            <div
+              ref={scrollRef}
+              className="flex-1 p-4 sm:p-5 overflow-y-auto space-y-4 font-sans text-xs custom-scrollbar"
+            >
+              {messages.map((msg, index) => {
+                const isUser = msg.role === 'user';
+
+                return (
+                  <div
+                    key={msg.id || index}
+                    className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}
+                  >
+                    <div
+                      className={`max-w-[86%] p-4 rounded-2xl leading-relaxed whitespace-pre-wrap ${
+                        isUser
+                          ? 'bg-gradient-to-r from-indigo-600 to-cyan-600 text-white rounded-br-sm shadow-md'
+                          : 'glass bg-slate-900/70 border border-white/[0.08] text-slate-200 rounded-bl-sm shadow-sm'
+                      }`}
+                    >
+                      {/* Tool Calls Execution Badge */}
+                      {msg.toolCalls && msg.toolCalls.length > 0 && (
+                        <div className="mb-2.5 pb-2 border-b border-white/10 space-y-1">
+                          {msg.toolCalls.map((tc, tcIdx) => (
+                            <span
+                              key={tcIdx}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-cyan-950/40 border border-cyan-500/30 text-cyan-300 text-[10px] font-mono font-medium block"
+                            >
+                              <Zap className="w-3 h-3 text-cyan-400" />
+                              <span>Tool Executed: {tc.action}</span>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      <span>{msg.content}</span>
+                    </div>
+
+                    {/* Message Actions */}
+                    {!isUser && msg.content && (
+                      <div className="flex items-center gap-2 mt-1.5 pl-1 text-slate-500 text-[10px] font-mono">
+                        <button
+                          onClick={() => handleCopyText(msg.content, index)}
+                          className="hover:text-slate-300 flex items-center gap-1 transition-colors cursor-pointer"
+                        >
+                          {copiedIndex === index ? (
+                            <>
+                              <Check className="w-3 h-3 text-emerald-400" />
+                              <span className="text-emerald-400">Copied</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3 h-3" />
+                              <span>Copy</span>
+                            </>
+                          )}
+                        </button>
+                        <span>•</span>
+                        <span>{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+
+              {/* Active Tool Execution Indicator */}
+              {activeTool && (
+                <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-cyan-950/30 border border-cyan-500/30 text-cyan-300 text-[11px] font-mono animate-pulse">
+                  <Zap className="w-3.5 h-3.5 text-cyan-400 animate-spin" />
+                  <span>{activeTool}</span>
+                </div>
+              )}
+
+              {/* Typing bounce */}
+              {isLoading && !activeTool && (
+                <div className="glass p-3 rounded-2xl border border-white/5 bg-slate-900/40 max-w-[100px] flex items-center justify-center">
+                  <div className="chat-typing-indicator">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Quick Prompt Starter Chips */}
+            <div className="px-4 py-2 border-t border-white/[0.06] bg-slate-900/60 overflow-x-auto flex gap-2 custom-scrollbar">
+              {quickPromptChips.map((chip, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => sendMessage(chip)}
+                  disabled={isLoading}
+                  className="px-3 py-1.5 rounded-xl glass border border-white/[0.08] hover:border-cyan-500/40 text-[11px] text-slate-300 hover:text-white whitespace-nowrap transition-all duration-200 cursor-pointer shrink-0 disabled:opacity-50"
+                >
+                  {chip}
+                </button>
+              ))}
+            </div>
+
+            {/* Chat Input Bar */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                sendMessage();
+              }}
+              className="p-3 bg-slate-950 border-t border-white/[0.08] flex items-center gap-2"
+            >
+              <button
+                type="button"
+                onClick={toggleVoiceInput}
+                className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+                  isListening
+                    ? 'bg-rose-500/20 border-rose-500/50 text-rose-400 animate-pulse'
+                    : 'glass border-white/[0.08] text-slate-400 hover:text-white'
+                }`}
+                title={isListening ? 'Stop listening' : 'Voice Input'}
+              >
+                {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              </button>
+
+              <input
+                ref={inputRef}
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Ask about MalikClaw, MCP, or Digital FTEs..."
+                className="flex-1 bg-slate-900/80 border border-white/[0.08] rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 transition-colors font-sans"
+              />
+
+              <button
+                type="submit"
+                disabled={!input.trim() || isLoading}
+                className="p-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 text-white disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90 transition-opacity cursor-pointer shadow-md shadow-indigo-500/20"
+                aria-label="Send message"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Floating Notification Toast */}
       <AnimatePresence>
         {toast && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className="chat-toast"
+            exit={{ opacity: 0, y: 15 }}
+            className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl glass border border-cyan-500/40 text-cyan-300 text-xs font-mono font-medium shadow-2xl bg-slate-950/90 pointer-events-none"
           >
             {toast}
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Toggle Button */}
-      <AnimatePresence mode="wait">
-        {!isOpen && (
-          <motion.button
-            key="open"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setIsOpen(true)}
-            className="h-14 w-14 rounded-full shadow-lg shadow-[color:var(--accent-glow)] flex items-center justify-center text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[color:var(--accent)]"
-            style={{ background: 'var(--gradient-button)' }}
-            aria-label="Open chat"
-          >
-            <Bot className="h-6 w-6" />
-          </motion.button>
-        )}
-      </AnimatePresence>
-
-      {/* Chat Panel */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.25 }}
-            className="mt-3 w-[320px] sm:w-[400px] h-[520px] max-h-[85vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-[color:var(--card-border)]"
-            style={{ background: 'var(--card-bg)', backdropFilter: 'blur(20px)' }}
-          >
-            {/* Header */}
-            <div
-              className="flex items-center justify-between px-5 py-3.5 text-white"
-              style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-secondary))' }}
-            >
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div className="h-10 w-10 rounded-full border-2 border-white/30 flex items-center justify-center bg-white/20 shadow-inner">
-                    <Sparkles className="h-5 w-5" />
-                  </div>
-                  <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-400 border-2 border-white animate-pulse" />
-                </div>
-                <div>
-                  <p className="font-bold text-sm tracking-tight">AI Assistant</p>
-                  <p className="text-[10px] text-white/80 uppercase tracking-widest">
-                    {isLoading ? 'Thinking...' : 'Online'}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={clearChat}
-                  className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-white/15 transition-colors"
-                  title="Clear chat"
-                >
-                  <RotateCcw className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-white/15 transition-colors"
-                  title="Close"
-                >
-                  <Minimize2 className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Messages */}
-            <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3 chat-scrollbar">
-              <AnimatePresence initial={false}>
-                {messages.map((msg) => (
-                  <motion.div
-                    key={msg.id}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className={cx('flex gap-2.5', msg.role === 'user' ? 'flex-row-reverse' : 'flex-row')}
-                  >
-                    {/* Avatar */}
-                    <div className={cx(
-                      'h-7 w-7 rounded-full flex items-center justify-center shrink-0 text-white text-xs',
-                      msg.role === 'user'
-                        ? 'bg-[color:var(--accent)]/30'
-                        : ''
-                    )} style={msg.role === 'assistant' ? { background: 'var(--gradient-button)' } : {}}>
-                      {msg.role === 'user' ? <User className="h-3.5 w-3.5" /> : <Bot className="h-3.5 w-3.5" />}
-                    </div>
-
-                    {/* Bubble */}
-                    <div className={cx('max-w-[78%] group', msg.role === 'user' ? 'items-end' : 'items-start')}>
-                      <div className={cx(
-                        'px-3.5 py-2.5 text-sm whitespace-pre-wrap leading-relaxed',
-                        msg.role === 'user' ? 'chat-msg-user' : 'chat-msg-assistant'
-                      )}>
-                        {msg.content || (
-                          <div className="chat-typing-indicator">
-                            <span /><span /><span />
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Meta row */}
-                      <div className={cx(
-                        'flex items-center gap-1.5 mt-1 px-1',
-                        msg.role === 'user' ? 'justify-end' : 'justify-start'
-                      )}>
-                        <span className="text-[10px] text-gray-500">
-                          {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                        {msg.role === 'assistant' && msg.content && (
-                          <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button
-                              onClick={() => handleReaction(msg.id, 'like')}
-                              className={cx('h-5 w-5 rounded flex items-center justify-center hover:bg-white/10 transition-colors', msg.reaction === 'like' && 'text-emerald-400')}
-                              title="Helpful"
-                            >
-                              <ThumbsUp className="h-3 w-3" />
-                            </button>
-                            <button
-                              onClick={() => handleReaction(msg.id, 'dislike')}
-                              className={cx('h-5 w-5 rounded flex items-center justify-center hover:bg-white/10 transition-colors', msg.reaction === 'dislike' && 'text-red-400')}
-                              title="Not helpful"
-                            >
-                              <ThumbsDown className="h-3 w-3" />
-                            </button>
-                            <button
-                              onClick={() => copyMessage(msg.content)}
-                              className="h-5 w-5 rounded flex items-center justify-center hover:bg-white/10 transition-colors"
-                              title="Copy"
-                            >
-                              <Copy className="h-3 w-3" />
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-
-              {/* Loading indicator */}
-              <AnimatePresence>
-                {isLoading && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="flex gap-2.5"
-                  >
-                    <div className="h-7 w-7 rounded-full flex items-center justify-center shrink-0 text-white text-xs" style={{ background: 'var(--gradient-button)' }}>
-                      <Bot className="h-3.5 w-3.5" />
-                    </div>
-                    <div className="chat-msg-assistant px-3.5 py-2.5">
-                      <div className="chat-typing-indicator">
-                        <span /><span /><span />
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Suggested Questions */}
-            <AnimatePresence>
-              {showSuggestions && !isLoading && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="px-4 py-2.5 border-t border-[color:var(--card-border)]"
-                >
-                  <p className="text-[10px] text-gray-500 mb-2 uppercase tracking-wider font-medium">Suggestions</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {suggestedQuestions.map((q) => (
-                      <motion.button
-                        key={q}
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.97 }}
-                        onClick={() => sendMessage(q)}
-                        className="text-[11px] px-3 py-1.5 rounded-full border border-[color:var(--card-border)] text-gray-400 hover:text-white hover:border-[color:var(--accent)] hover:bg-[color:var(--accent)]/10 transition-all"
-                      >
-                        {q}
-                      </motion.button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Input */}
-            <form
-              onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
-              className="p-3 border-t border-[color:var(--card-border)]"
-            >
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={toggleListening}
-                  className={cx(
-                    'h-10 w-10 rounded-xl flex items-center justify-center shrink-0 transition-all',
-                    isListening
-                      ? 'bg-red-500 text-white animate-pulse'
-                      : 'bg-[color:var(--background-secondary)] text-gray-400 hover:text-white hover:bg-[color:var(--accent)]/20'
-                  )}
-                  title={isListening ? 'Stop listening' : 'Voice input'}
-                >
-                  <Mic className="h-4 w-4" />
-                </button>
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder={isListening ? 'Listening...' : 'Ask about Abdullah...'}
-                  disabled={isLoading}
-                  className="flex-1 h-10 rounded-xl border border-[color:var(--card-border)] bg-[color:var(--background)] px-3 text-sm text-[color:var(--foreground)] placeholder-gray-500 outline-none focus:ring-2 focus:ring-[color:var(--accent)]/50 disabled:opacity-50 transition-all"
-                />
-                <motion.button
-                  type="submit"
-                  disabled={isLoading || !input.trim()}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="h-10 w-10 rounded-xl flex items-center justify-center text-white shrink-0 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg transition-all"
-                  style={{ background: 'var(--gradient-button)' }}
-                >
-                  {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                </motion.button>
-              </div>
-              <p className="mt-1.5 text-center text-[10px] text-gray-600">
-                Powered by AI &bull; Press Enter to send
-              </p>
-            </form>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+    </>
   );
 }

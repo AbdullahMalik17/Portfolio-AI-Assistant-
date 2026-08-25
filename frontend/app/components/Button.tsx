@@ -2,8 +2,9 @@
 
 import { motion, HTMLMotionProps } from 'framer-motion';
 import { ReactNode } from 'react';
+import { Loader2 } from 'lucide-react';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'outline';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'outline' | 'cyber';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
@@ -18,19 +19,21 @@ interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-gradient-button text-gray-900 font-bold hover:opacity-90 shadow-lg hover:shadow-xl transition-all',
+    'bg-gradient-to-r from-indigo-500 via-indigo-600 to-cyan-500 text-white font-bold shadow-[0_0_25px_rgba(99,102,241,0.35)] hover:shadow-[0_0_35px_rgba(6,182,212,0.5)] border border-white/10 hover:border-cyan-400/50 transition-all duration-300',
   secondary:
-    'bg-[color:var(--background-secondary)] text-[color:var(--foreground)] hover:bg-[color:var(--accent)]/10 border border-[color:var(--accent)]/20 hover:border-[color:var(--accent)]/40',
+    'glass text-gray-200 hover:text-white hover:bg-white/[0.08] border border-white/10 hover:border-indigo-500/40 transition-all duration-300',
   ghost:
-    'bg-transparent text-[color:var(--foreground)] hover:bg-[color:var(--accent)]/10 hover:text-[color:var(--accent)]',
+    'bg-transparent text-gray-300 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10 transition-all duration-200',
   outline:
-    'bg-transparent text-[color:var(--accent)] border-2 border-[color:var(--accent)]/50 hover:bg-[color:var(--accent)]/10 hover:border-[color:var(--accent)] hover:shadow-[0_0_20px_var(--accent-glow)]',
+    'bg-transparent text-cyan-400 border border-cyan-500/30 hover:border-cyan-400 hover:bg-cyan-500/10 hover:shadow-[0_0_20px_rgba(6,182,212,0.25)] transition-all duration-300',
+  cyber:
+    'bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-500 text-white font-bold shadow-[0_0_25px_rgba(16,185,129,0.35)] hover:shadow-[0_0_35px_rgba(16,185,129,0.55)] border border-emerald-400/30 transition-all duration-300'
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: 'px-4 py-2 text-sm rounded-lg',
-  md: 'px-6 py-3 text-base rounded-xl',
-  lg: 'px-8 py-4 text-lg rounded-2xl',
+  sm: 'px-3.5 py-1.5 text-xs rounded-xl font-medium tracking-wide',
+  md: 'px-5 py-2.5 text-sm rounded-xl font-semibold tracking-wide',
+  lg: 'px-7 py-3.5 text-base rounded-2xl font-bold tracking-tight',
 };
 
 export default function Button({
@@ -46,13 +49,13 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseStyles =
-    'font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] focus-visible:ring-offset-2';
+    'inline-flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/50 cursor-pointer select-none';
 
   const widthStyle = fullWidth ? 'w-full' : '';
 
   return (
     <motion.button
-      whileHover={!disabled && !loading ? { scale: 1.02 } : {}}
+      whileHover={!disabled && !loading ? { scale: 1.02, translateY: -1 } : {}}
       whileTap={!disabled && !loading ? { scale: 0.98 } : {}}
       aria-busy={loading}
       className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${widthStyle} ${className}`}
@@ -61,33 +64,14 @@ export default function Button({
     >
       {loading ? (
         <>
-          <svg
-            className="animate-spin h-5 w-5"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            />
-          </svg>
-          <span>Loading...</span>
+          <Loader2 className="w-4 h-4 animate-spin text-current" />
+          <span>Processing...</span>
         </>
       ) : (
         <>
-          {leftIcon && <span>{leftIcon}</span>}
+          {leftIcon && <span className="shrink-0">{leftIcon}</span>}
           <span>{children}</span>
-          {rightIcon && <span>{rightIcon}</span>}
+          {rightIcon && <span className="shrink-0">{rightIcon}</span>}
         </>
       )}
     </motion.button>

@@ -1,278 +1,252 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect } from 'react';
+import { 
+  X, ExternalLink, Github, CheckCircle2, 
+  ShieldCheck, Globe2
+} from 'lucide-react';
+import { PortfolioProject } from '../lib/portfolio-data';
 import Button from './Button';
 
 interface ProjectModalProps {
+  project: PortfolioProject | null;
   isOpen: boolean;
   onClose: () => void;
-  mcpMarketUrl?: string;
-  project: {
-    title: string;
-    description: string;
-    longDescription?: string;
-    image: string;
-    tags: string[];
-    githubUrl?: string | null;
-    liveUrl?: string | null;
-    features?: string[];
-    challenges?: string[];
-    technologies?: string[];
-    results?: string[];
-  };
 }
 
-export default function ProjectModal({ isOpen, onClose, project, mcpMarketUrl }: ProjectModalProps) {
-  // Lock body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen]);
+export default function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
 
-  // Close on escape key
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
+
     if (isOpen) {
-      window.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', handleKeyDown);
     }
-    return () => window.removeEventListener('keydown', handleEscape);
+
+    return () => {
+      document.body.style.overflow = 'unset';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, [isOpen, onClose]);
+
+  if (!isOpen || !project) return null;
 
   return (
     <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+        {/* Backdrop */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="fixed inset-0 bg-black/80 backdrop-blur-md"
+        />
+
+        {/* Modal Container */}
+        <motion.div
+          ref={modalRef}
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          className="relative w-full max-w-4xl max-h-[90vh] glass rounded-3xl border border-white/10 bg-slate-950/95 shadow-2xl overflow-y-auto z-10 custom-scrollbar"
+        >
+          {/* Header Close Button */}
+          <button
             onClick={onClose}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50"
-          />
+            className="absolute top-6 right-6 p-2.5 rounded-full glass border border-white/10 text-slate-400 hover:text-white hover:border-white/30 transition-all z-20 cursor-pointer"
+            aria-label="Close modal"
+          >
+            <X className="w-5 h-5" />
+          </button>
 
-          {/* Modal */}
-          <div className="fixed inset-0 z-50 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="relative w-full max-w-4xl"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="glass rounded-3xl shadow-2xl border-2 border-[color:var(--accent)]/20 overflow-hidden">
-                  {/* Close Button */}
-                  <button
-                    onClick={onClose}
-                    className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full glass hover:bg-[color:var(--accent)] hover:text-white transition-all"
-                    aria-label="Close modal"
-                  >
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
+          {/* Modal Header */}
+          <div className="p-6 sm:p-10 border-b border-white/[0.08]">
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono font-bold uppercase tracking-wider">
+                {project.category}
+              </span>
+              {project.mcpMarketUrl && (
+                <span className="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-mono font-bold flex items-center gap-1.5">
+                  <Globe2 className="w-3.5 h-3.5" />
+                  MCP Market Listed
+                </span>
+              )}
+              {project.certificateUrl && (
+                <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  A2AS Behavior Certified
+                </span>
+              )}
+            </div>
 
-                  {/* Header Image */}
-                  <div className="relative h-64 md:h-80 bg-gradient-primary overflow-hidden">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <h2 className="text-4xl md:text-5xl font-bold text-white text-center px-6">
-                        {project.title}
-                      </h2>
-                    </div>
-                  </div>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+              {project.title}
+            </h2>
+            {project.subtitle && (
+              <p className="text-base text-slate-400 mt-2 font-medium">
+                {project.subtitle}
+              </p>
+            )}
+          </div>
 
-                  {/* Content */}
-                  <div className="p-6 md:p-8 max-h-[60vh] overflow-y-auto">
-                    {/* Description */}
-                    <div className="mb-6">
-                      <p className="text-lg leading-relaxed text-gray-700 dark:text-gray-300">
-                        {project.longDescription || project.description}
-                      </p>
-                    </div>
+          {/* Modal Body */}
+          <div className="p-6 sm:p-10 space-y-8">
+            {/* Overview */}
+            <div>
+              <h3 className="text-sm font-mono uppercase tracking-widest text-slate-400 mb-3 font-semibold">
+                System Overview
+              </h3>
+              <p className="text-sm sm:text-base text-slate-200 leading-relaxed">
+                {project.longDescription || project.description}
+              </p>
+            </div>
 
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-2 mb-6">
-                      {project.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-3 py-1 bg-[color:var(--accent)]/10 text-[color:var(--accent)] rounded-full text-sm font-medium"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Features */}
-                    {project.features && project.features.length > 0 && (
-                      <div className="mb-6">
-                        <h3 className="text-2xl font-bold mb-3 flex items-center gap-2">
-                          <span>✨</span> Key Features
-                        </h3>
-                        <ul className="space-y-2">
-                          {project.features.map((feature, index) => (
-                            <li key={index} className="flex items-start gap-2">
-                              <span className="text-[color:var(--accent)] mt-1">▸</span>
-                              <span className="text-gray-700 dark:text-gray-300">{feature}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* Technologies */}
-                    {project.technologies && project.technologies.length > 0 && (
-                      <div className="mb-6">
-                        <h3 className="text-2xl font-bold mb-3 flex items-center gap-2">
-                          <span>🔧</span> Technologies Used
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                          {project.technologies.map((tech) => (
-                            <span
-                              key={tech}
-                              className="px-3 py-1 glass rounded-lg text-sm font-medium"
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Challenges */}
-                    {project.challenges && project.challenges.length > 0 && (
-                      <div className="mb-6">
-                        <h3 className="text-2xl font-bold mb-3 flex items-center gap-2">
-                          <span>🎯</span> Challenges & Solutions
-                        </h3>
-                        <ul className="space-y-2">
-                          {project.challenges.map((challenge, index) => (
-                            <li key={index} className="flex items-start gap-2">
-                              <span className="text-[color:var(--accent)] mt-1">▸</span>
-                              <span className="text-gray-700 dark:text-gray-300">{challenge}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* Results */}
-                    {project.results && project.results.length > 0 && (
-                      <div className="mb-6">
-                        <h3 className="text-2xl font-bold mb-3 flex items-center gap-2">
-                          <span>📊</span> Results & Impact
-                        </h3>
-                        <ul className="space-y-2">
-                          {project.results.map((result, index) => (
-                            <li key={index} className="flex items-start gap-2">
-                              <span className="text-green-500 mt-1">✓</span>
-                              <span className="text-gray-700 dark:text-gray-300">{result}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* Verified External Listings Node (MCP Market) */}
-                    {mcpMarketUrl && (
-                      <div className="mb-6">
-                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                          <span>🔗</span> Verified External Listings
-                        </h3>
-                        <div className="flex flex-col gap-3">
-                          <a
-                            href={mcpMarketUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-violet-500/10 border border-violet-500/25 text-violet-300 hover:bg-violet-500/20 hover:border-violet-500/50 transition-all group/mcp"
-                          >
-                            <span className="relative flex h-3 w-3 shrink-0">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-3 w-3 bg-violet-500"></span>
-                            </span>
-                            <div className="flex flex-col flex-1">
-                              <span className="font-bold text-sm">MCP Market Listing</span>
-                              <span className="text-xs text-violet-400/70 mt-0.5">mcpmarket.com/ko/server/malikclaw</span>
-                            </div>
-                            <svg className="w-4 h-4 opacity-50 group-hover/mcp:opacity-100 transition-opacity shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                          </a>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Action Buttons */}
-                    <div className="flex flex-wrap gap-3 pt-6 border-t border-[color:var(--card-border)]">
-                      {project.liveUrl && (
-                        <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
-                          <Button
-                            variant="primary"
-                            size="md"
-                            rightIcon={
-                              <svg
-                                className="w-5 h-5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                                />
-                              </svg>
-                            }
-                          >
-                            View Live Demo
-                          </Button>
-                        </a>
-                      )}
-                      {project.githubUrl && (
-                        <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
-                          <Button
-                            variant="outline"
-                            size="md"
-                            rightIcon={
-                              <svg
-                                className="w-5 h-5"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                              </svg>
-                            }
-                          >
-                            View Code
-                          </Button>
-                        </a>
-                      )}
-                    </div>
-                  </div>
+            {/* Problem & Solution Callout */}
+            {project.problem && project.solution && (
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="p-5 rounded-2xl bg-rose-950/20 border border-rose-500/20">
+                  <h4 className="text-xs font-mono text-rose-400 uppercase font-bold tracking-wider mb-2">
+                    Problem & Constraints
+                  </h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    {project.problem}
+                  </p>
                 </div>
-              </motion.div>
+
+                <div className="p-5 rounded-2xl bg-cyan-950/20 border border-cyan-500/20">
+                  <h4 className="text-xs font-mono text-cyan-400 uppercase font-bold tracking-wider mb-2">
+                    Engineered Solution
+                  </h4>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    {project.solution}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Architecture Pipeline Flow */}
+            {project.architecturePipeline && (
+              <div>
+                <h3 className="text-sm font-mono uppercase tracking-widest text-indigo-400 mb-3 font-semibold">
+                  Orchestration Pipeline
+                </h3>
+                <div className="space-y-2.5">
+                  {project.architecturePipeline.map((step, sIdx) => (
+                    <div
+                      key={sIdx}
+                      className="p-3.5 rounded-xl glass border border-white/10 bg-slate-900/40 flex items-center justify-between gap-4"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="w-6 h-6 rounded-md bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center font-mono text-xs font-bold text-indigo-300">
+                          0{sIdx + 1}
+                        </span>
+                        <div>
+                          <div className="text-xs font-bold text-white">{step.label}</div>
+                          <div className="text-[11px] text-slate-400 font-mono">{step.sublabel}</div>
+                        </div>
+                      </div>
+                      {step.badge && (
+                        <span className="px-2.5 py-1 rounded bg-white/5 border border-white/10 text-[10px] font-mono text-cyan-300">
+                          {step.badge}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Key Capabilities */}
+            {project.keyCapabilities && project.keyCapabilities.length > 0 && (
+              <div>
+                <h3 className="text-sm font-mono uppercase tracking-widest text-slate-400 mb-3 font-semibold">
+                  Key Capabilities
+                </h3>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {project.keyCapabilities.map((cap, cIdx) => (
+                    <div
+                      key={cIdx}
+                      className="p-3 rounded-xl glass border border-white/5 bg-slate-900/40 flex items-start gap-2.5 text-xs text-slate-300"
+                    >
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                      <span>{cap}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Tech Stack Chips */}
+            <div>
+              <h3 className="text-sm font-mono uppercase tracking-widest text-slate-400 mb-3 font-semibold">
+                Technologies & Protocols
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {project.tech.map((technology, tIdx) => (
+                  <span
+                    key={tIdx}
+                    className="px-3 py-1.5 rounded-xl bg-slate-900 border border-white/10 text-xs font-mono text-cyan-300"
+                  >
+                    {technology}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
-        </>
-      )}
+
+          {/* Modal Footer Actions */}
+          <div className="p-6 sm:p-10 border-t border-white/[0.08] bg-slate-900/60 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-3">
+              {project.liveUrl && (
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={() => window.open(project.liveUrl!, '_blank')}
+                  rightIcon={<ExternalLink className="w-4 h-4" />}
+                >
+                  Open Live System
+                </Button>
+              )}
+
+              {project.githubUrl && (
+                <Button
+                  variant="secondary"
+                  size="md"
+                  onClick={() => window.open(project.githubUrl!, '_blank')}
+                  leftIcon={<Github className="w-4 h-4" />}
+                >
+                  View Source Code
+                </Button>
+              )}
+
+              {project.mcpMarketUrl && (
+                <Button
+                  variant="secondary"
+                  size="md"
+                  onClick={() => window.open(project.mcpMarketUrl!, '_blank')}
+                  leftIcon={<Globe2 className="w-4 h-4 text-purple-400" />}
+                >
+                  MCP Market Listing
+                </Button>
+              )}
+            </div>
+
+            <button
+              onClick={onClose}
+              className="text-xs font-mono text-slate-400 hover:text-white transition-colors cursor-pointer"
+            >
+              Press ESC or click outside to dismiss
+            </button>
+          </div>
+        </motion.div>
+      </div>
     </AnimatePresence>
   );
 }

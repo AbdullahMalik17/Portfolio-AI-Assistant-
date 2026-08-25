@@ -2,6 +2,11 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  FileText, Github, ExternalLink, 
+  Cpu, Bot, MessageSquare, Check,
+  type LucideIcon
+} from 'lucide-react';
 import FadeInWhenVisible from './FadeInWhenVisible';
 
 interface CaseStudy {
@@ -9,6 +14,7 @@ interface CaseStudy {
   title: string;
   subtitle: string;
   badge: string;
+  icon: LucideIcon;
   accentColor: string;
   problem: string;
   requirements: string[];
@@ -34,6 +40,7 @@ const caseStudies: CaseStudy[] = [
     title: 'MalikClaw — Edge Agentic Runtime',
     subtitle: 'Ultra-lightweight AI Assistant Gateway for Edge Devices with Urdu-First Support',
     badge: 'MCP Market Listed • A2AS Certified',
+    icon: Cpu,
     accentColor: 'from-indigo-500 to-cyan-400',
     problem: 'Standard Python agent frameworks (e.g. LangChain, CrewAI) consume 300MB–1GB+ RAM, making them unusable on cheap $10 Raspberry Pi Zero or Android hardware.',
     requirements: [
@@ -55,7 +62,7 @@ const caseStudies: CaseStudy[] = [
       'Designed custom RTL (Right-to-Left) Urdu parser for regional accessibility',
       'Secured agent sandbox via OS-level privilege separation',
     ],
-    result: 'Achieved 99% RAM reduction vs traditional gateways, successful deployment on $10 edge hardware, and official A2AS behavior security certification.',
+    result: 'Achieved 98.4% RAM reduction vs traditional gateways, successful deployment on $10 edge hardware, and official A2AS behavior security certification.',
     githubUrl: 'https://github.com/AbdullahMalik17/malikclaw',
     liveUrl: 'https://malikclaw.vercel.app/',
     mcpUrl: 'https://mcpmarket.com/ko/server/malikclaw',
@@ -66,6 +73,7 @@ const caseStudies: CaseStudy[] = [
     title: 'Digital FTE — Abdullah Junior',
     subtitle: 'Autonomous 24/7 Digital Employee with Cloud Sentry + Local Executive Architecture',
     badge: 'Dual-Agent Architecture',
+    icon: Bot,
     accentColor: 'from-pink-500 to-rose-400',
     problem: 'Businesses and founders waste hours manually sorting incoming communications (Email, WhatsApp, LinkedIn) and performing administrative bookkeeping across SaaS tools.',
     requirements: [
@@ -95,6 +103,7 @@ const caseStudies: CaseStudy[] = [
     title: 'Customer Success Digital FTE',
     subtitle: 'Enterprise Multi-Channel AI Support System with pgvector & Kafka Async Queues',
     badge: '100% Complete (117/117 Tasks)',
+    icon: MessageSquare,
     accentColor: 'from-cyan-500 to-emerald-400',
     problem: 'Customer support teams suffer from slow response times, disjointed cross-channel customer histories, and high operational costs for recurring support queries.',
     requirements: [
@@ -121,44 +130,52 @@ const caseStudies: CaseStudy[] = [
   },
 ];
 
-const CaseStudies = () => {
+export default function CaseStudies() {
   const [activeTab, setActiveTab] = useState<string>(caseStudies[0].id);
 
   const selectedStudy = caseStudies.find((cs) => cs.id === activeTab) || caseStudies[0];
+  const SelectedIcon = selectedStudy.icon;
 
   return (
-    <section id="case-studies" className="py-24 relative overflow-hidden bg-[color:var(--background-secondary)]/40">
+    <section id="case-studies" className="py-24 relative overflow-hidden bg-slate-950/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <FadeInWhenVisible>
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[color:var(--accent)]/10 border border-[color:var(--accent)]/30 text-[color:var(--accent)] text-xs font-mono font-bold uppercase tracking-wider mb-4">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono font-bold uppercase tracking-wider mb-4 shadow-sm shadow-cyan-500/10">
+              <FileText className="w-3.5 h-3.5 text-cyan-400" />
               Deep Engineering Insights
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
               Engineering <span className="text-shimmer">Case Studies</span>
             </h2>
-            <p className="mt-4 text-base sm:text-lg text-gray-400 max-w-3xl mx-auto">
-              Architectural breakdowns of flagship autonomous AI systems built for production performance, security, and edge efficiency.
+            <p className="mt-4 text-base sm:text-lg text-slate-400 max-w-3xl mx-auto leading-relaxed">
+              Architectural breakdowns of flagship autonomous AI systems built for production performance, security isolation, and edge efficiency.
             </p>
           </div>
         </FadeInWhenVisible>
 
         {/* Tab Navigation */}
         <div className="flex flex-wrap justify-center gap-3 mb-12">
-          {caseStudies.map((cs) => (
-            <button
-              key={cs.id}
-              onClick={() => setActiveTab(cs.id)}
-              className={`px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all duration-300 flex items-center gap-2.5 ${
-                activeTab === cs.id
-                  ? 'bg-gradient-to-r from-[color:var(--accent)] to-[color:var(--accent-secondary)] text-white shadow-lg shadow-[color:var(--accent-glow)]/30 scale-105'
-                  : 'glass text-gray-400 hover:text-white hover:bg-white/10 border-white/5'
-              }`}
-            >
-              <span>{cs.title.split('—')[0]}</span>
-              <span className="text-[10px] opacity-70 hidden sm:inline font-mono">({cs.badge.split('•')[0]})</span>
-            </button>
-          ))}
+          {caseStudies.map((cs) => {
+            const Icon = cs.icon;
+            const isSelected = activeTab === cs.id;
+
+            return (
+              <button
+                key={cs.id}
+                onClick={() => setActiveTab(cs.id)}
+                className={`px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all duration-300 flex items-center gap-2.5 cursor-pointer ${
+                  isSelected
+                    ? 'bg-gradient-to-r from-indigo-500 via-indigo-600 to-cyan-500 text-white shadow-lg shadow-indigo-500/30 scale-105 border border-white/20'
+                    : 'glass text-slate-400 hover:text-white hover:bg-white/[0.08] border border-white/[0.08]'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{cs.title.split('—')[0]}</span>
+                <span className="text-[10px] opacity-70 hidden sm:inline font-mono">({cs.badge.split('•')[0]})</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Case Study Detail Card */}
@@ -169,32 +186,37 @@ const CaseStudies = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="glass glow-card rounded-3xl p-6 sm:p-10 border border-white/10 bg-white/[0.02] shadow-2xl"
+            className="glass rounded-3xl p-6 sm:p-10 border border-white/10 bg-slate-950/80 shadow-2xl"
           >
             {/* Case Study Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-8 border-b border-white/10">
-              <div>
-                <span className="text-xs font-mono font-bold text-[color:var(--accent-tertiary)] uppercase tracking-widest block mb-1">
-                  {selectedStudy.badge}
-                </span>
-                <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                  {selectedStudy.title}
-                </h3>
-                <p className="text-sm text-gray-400 mt-1 font-medium">
-                  {selectedStudy.subtitle}
-                </p>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-8 border-b border-white/[0.08]">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-2xl glass border border-white/10 flex items-center justify-center text-cyan-400 bg-white/[0.02] shrink-0">
+                  <SelectedIcon className="w-6 h-6" />
+                </div>
+                <div>
+                  <span className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-widest block mb-1">
+                    {selectedStudy.badge}
+                  </span>
+                  <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                    {selectedStudy.title}
+                  </h3>
+                  <p className="text-sm text-slate-400 mt-1 font-medium">
+                    {selectedStudy.subtitle}
+                  </p>
+                </div>
               </div>
 
-              <div className="flex flex-wrap gap-3 shrink-0">
+              <div className="flex flex-wrap gap-2.5 shrink-0">
                 {selectedStudy.githubUrl && (
                   <a
                     href={selectedStudy.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold transition-all flex items-center gap-2"
+                    className="px-4 py-2.5 rounded-xl glass hover:bg-white/10 border border-white/10 text-white text-xs font-bold transition-all flex items-center gap-2"
                   >
-                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-                    GitHub Code
+                    <Github className="w-4 h-4 text-slate-400" />
+                    <span>Repository</span>
                   </a>
                 )}
                 {selectedStudy.liveUrl && (
@@ -202,30 +224,30 @@ const CaseStudies = () => {
                     href={selectedStudy.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-4 py-2.5 rounded-xl bg-[color:var(--accent)] text-white text-xs font-bold transition-all hover:bg-blue-600 flex items-center gap-2 shadow-md shadow-[color:var(--accent-glow)]/30"
+                    className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 text-white text-xs font-bold transition-all hover:opacity-90 flex items-center gap-2 shadow-md shadow-indigo-500/25"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                    Live System
+                    <ExternalLink className="w-4 h-4" />
+                    <span>Live System</span>
                   </a>
                 )}
               </div>
             </div>
 
-            {/* 12-Point Grid */}
+            {/* 12-Point Engineering Breakdown Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-8">
               {/* 01. Problem */}
-              <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2">
-                <span className="text-[10px] font-mono text-[color:var(--accent-secondary)] font-extrabold tracking-widest uppercase">01. Problem</span>
-                <p className="text-xs text-gray-300 leading-relaxed font-normal">{selectedStudy.problem}</p>
+              <div className="p-5 rounded-2xl glass border border-white/5 bg-slate-900/40 space-y-2">
+                <span className="text-[10px] font-mono text-pink-400 font-extrabold tracking-widest uppercase">01. Problem</span>
+                <p className="text-xs text-slate-300 leading-relaxed font-normal">{selectedStudy.problem}</p>
               </div>
 
               {/* 02. Requirements */}
-              <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2">
-                <span className="text-[10px] font-mono text-[color:var(--accent-secondary)] font-extrabold tracking-widest uppercase">02. Requirements</span>
-                <ul className="space-y-1">
+              <div className="p-5 rounded-2xl glass border border-white/5 bg-slate-900/40 space-y-2">
+                <span className="text-[10px] font-mono text-pink-400 font-extrabold tracking-widest uppercase">02. Requirements</span>
+                <ul className="space-y-1.5">
                   {selectedStudy.requirements.map((req, idx) => (
-                    <li key={idx} className="text-xs text-gray-300 flex items-start gap-1.5">
-                      <span className="text-[color:var(--accent)] font-bold">•</span>
+                    <li key={idx} className="text-xs text-slate-300 flex items-start gap-2">
+                      <span className="text-cyan-400 font-bold">•</span>
                       <span>{req}</span>
                     </li>
                   ))}
@@ -233,23 +255,23 @@ const CaseStudies = () => {
               </div>
 
               {/* 03. Architecture */}
-              <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2">
-                <span className="text-[10px] font-mono text-[color:var(--accent-secondary)] font-extrabold tracking-widest uppercase">03. System Architecture</span>
-                <p className="text-xs text-gray-300 font-mono leading-relaxed bg-black/40 p-2.5 rounded-xl border border-white/5">{selectedStudy.architecture}</p>
+              <div className="p-5 rounded-2xl glass border border-white/5 bg-slate-900/40 space-y-2">
+                <span className="text-[10px] font-mono text-pink-400 font-extrabold tracking-widest uppercase">03. System Architecture</span>
+                <p className="text-xs text-slate-300 font-mono leading-relaxed bg-[#070b14] p-3 rounded-xl border border-white/5">{selectedStudy.architecture}</p>
               </div>
 
               {/* 04. Agent Design */}
-              <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2">
-                <span className="text-[10px] font-mono text-[color:var(--neon-cyan)] font-extrabold tracking-widest uppercase">04. Agent Design</span>
-                <p className="text-xs text-gray-300 leading-relaxed font-normal">{selectedStudy.agentDesign}</p>
+              <div className="p-5 rounded-2xl glass border border-white/5 bg-slate-900/40 space-y-2">
+                <span className="text-[10px] font-mono text-cyan-400 font-extrabold tracking-widest uppercase">04. Agent Design</span>
+                <p className="text-xs text-slate-300 leading-relaxed font-normal">{selectedStudy.agentDesign}</p>
               </div>
 
               {/* 05. Tools */}
-              <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2">
-                <span className="text-[10px] font-mono text-[color:var(--neon-cyan)] font-extrabold tracking-widest uppercase">05. Tool Integrations</span>
+              <div className="p-5 rounded-2xl glass border border-white/5 bg-slate-900/40 space-y-2">
+                <span className="text-[10px] font-mono text-cyan-400 font-extrabold tracking-widest uppercase">05. Tool Integrations</span>
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {selectedStudy.tools.map((tool, idx) => (
-                    <span key={idx} className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] font-mono text-gray-200">
+                    <span key={idx} className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] font-mono text-slate-200">
                       {tool}
                     </span>
                   ))}
@@ -257,42 +279,42 @@ const CaseStudies = () => {
               </div>
 
               {/* 06. Memory */}
-              <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2">
-                <span className="text-[10px] font-mono text-[color:var(--neon-cyan)] font-extrabold tracking-widest uppercase">06. Memory & State</span>
-                <p className="text-xs text-gray-300 leading-relaxed font-normal">{selectedStudy.memory}</p>
+              <div className="p-5 rounded-2xl glass border border-white/5 bg-slate-900/40 space-y-2">
+                <span className="text-[10px] font-mono text-cyan-400 font-extrabold tracking-widest uppercase">06. Memory & State</span>
+                <p className="text-xs text-slate-300 leading-relaxed font-normal">{selectedStudy.memory}</p>
               </div>
 
               {/* 07. MCP Integration */}
-              <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2">
-                <span className="text-[10px] font-mono text-[color:var(--accent)] font-extrabold tracking-widest uppercase">07. MCP Protocol</span>
-                <p className="text-xs text-gray-300 leading-relaxed font-normal">{selectedStudy.mcpIntegration}</p>
+              <div className="p-5 rounded-2xl glass border border-white/5 bg-slate-900/40 space-y-2">
+                <span className="text-[10px] font-mono text-indigo-400 font-extrabold tracking-widest uppercase">07. MCP Protocol</span>
+                <p className="text-xs text-slate-300 leading-relaxed font-normal">{selectedStudy.mcpIntegration}</p>
               </div>
 
               {/* 08. Model Strategy */}
-              <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2">
-                <span className="text-[10px] font-mono text-[color:var(--accent)] font-extrabold tracking-widest uppercase">08. Model Strategy</span>
-                <p className="text-xs text-gray-300 leading-relaxed font-normal">{selectedStudy.modelStrategy}</p>
+              <div className="p-5 rounded-2xl glass border border-white/5 bg-slate-900/40 space-y-2">
+                <span className="text-[10px] font-mono text-indigo-400 font-extrabold tracking-widest uppercase">08. Model Strategy</span>
+                <p className="text-xs text-slate-300 leading-relaxed font-normal">{selectedStudy.modelStrategy}</p>
               </div>
 
               {/* 09. Error Handling */}
-              <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2">
-                <span className="text-[10px] font-mono text-[color:var(--accent)] font-extrabold tracking-widest uppercase">09. Resilience & Fallbacks</span>
-                <p className="text-xs text-gray-300 leading-relaxed font-normal">{selectedStudy.errorHandling}</p>
+              <div className="p-5 rounded-2xl glass border border-white/5 bg-slate-900/40 space-y-2">
+                <span className="text-[10px] font-mono text-indigo-400 font-extrabold tracking-widest uppercase">09. Resilience & Fallbacks</span>
+                <p className="text-xs text-slate-300 leading-relaxed font-normal">{selectedStudy.errorHandling}</p>
               </div>
 
               {/* 10. Evaluation */}
-              <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2">
-                <span className="text-[10px] font-mono text-[color:var(--neon-green)] font-extrabold tracking-widest uppercase">10. Benchmarks & Evaluation</span>
-                <p className="text-xs text-gray-300 leading-relaxed font-normal">{selectedStudy.evaluation}</p>
+              <div className="p-5 rounded-2xl glass border border-white/5 bg-slate-900/40 space-y-2">
+                <span className="text-[10px] font-mono text-emerald-400 font-extrabold tracking-widest uppercase">10. Benchmarks & Evaluation</span>
+                <p className="text-xs text-slate-300 leading-relaxed font-normal">{selectedStudy.evaluation}</p>
               </div>
 
               {/* 11. Key Decisions */}
-              <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2">
-                <span className="text-[10px] font-mono text-[color:var(--neon-green)] font-extrabold tracking-widest uppercase">11. Engineering Decisions</span>
-                <ul className="space-y-1">
+              <div className="p-5 rounded-2xl glass border border-white/5 bg-slate-900/40 space-y-2">
+                <span className="text-[10px] font-mono text-emerald-400 font-extrabold tracking-widest uppercase">11. Engineering Decisions</span>
+                <ul className="space-y-1.5">
                   {selectedStudy.keyDecisions.map((dec, idx) => (
-                    <li key={idx} className="text-xs text-gray-300 flex items-start gap-1.5">
-                      <span className="text-[color:var(--neon-green)] font-bold">✓</span>
+                    <li key={idx} className="text-xs text-slate-300 flex items-start gap-2">
+                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
                       <span>{dec}</span>
                     </li>
                   ))}
@@ -310,6 +332,4 @@ const CaseStudies = () => {
       </div>
     </section>
   );
-};
-
-export default CaseStudies;
+}
